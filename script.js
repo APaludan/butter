@@ -1,11 +1,13 @@
 const url = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
-const windS = document.getElementById("wind");
-const tempS = document.getElementById("temp");
-const arrowS = document.getElementById("arrow");
-const wackS = document.getElementById("wack");
-let avgTemp = null;
-let avgWind = null;
-let avgDirection = null;
+const windN = document.getElementById("wind");
+const tempN = document.getElementById("temp");
+const arrowN = document.getElementById("arrow");
+const wackN = document.getElementById("wack");
+
+const windH = document.getElementById("wind1");
+const tempH = document.getElementById("temp1");
+const arrowH = document.getElementById("arrow1");
+const wackH = document.getElementById("wack1");
 
 update()
 
@@ -21,41 +23,32 @@ function update() {
             while (timeseries[index]["time"].substring(11, 13) != utcHours.toString()) {
                 index++;
             }
+            let forecast = [];
+            for (let i = index; i < 5; i++) {
+                let now = timeseries[i]["data"];
+                let temp = now["instant"]["details"]["air_temperature"];
+                let wind = now["instant"]["details"]["wind_speed"];
+                let direction = now["instant"]["details"]["wind_from_direction"];
+                forecast.push(new Hour(temp, wind, direction));
+            }
+            console.log(forecast);
 
-            let now = timeseries[index]["data"];
-            let temp = now["instant"]["details"]["air_temperature"];
-            let wind = now["instant"]["details"]["wind_speed"];
-            let direction = now["instant"]["details"]["wind_from_direction"];
 
-            let next = timeseries[index + 1]["data"];
-            let nextTemp = next["instant"]["details"]["air_temperature"];
-            let nextWind = next["instant"]["details"]["wind_speed"];
-            let nextDirection = next["instant"]["details"]["wind_from_direction"];
+            tempN.innerHTML = forecast[0].temp.toFixed(0);
+            windN.innerHTML = forecast[0].wind.toFixed(1);
+            arrowN.style.transform = "rotate(" + (forecast[0].direction + 180) + "deg)";
+            wackN.innerHTML = forecast[0].wack.toFixed(0);
 
-            avgTemp = (temp + nextTemp) / 2;
-            avgWind = (wind + nextWind) / 2;
-            avgDirection = (direction + nextDirection) / 2;
-
-            tempS.innerHTML = avgTemp.toFixed(0);
-            windS.innerHTML = avgWind.toFixed(1);
-            arrowS.style.transform = "rotate(" + (avgDirection + 180) + "deg)";
-            calcWack();
+            tempH.innerHTML = forecast[1].temp.toFixed(0);
+            windH.innerHTML = forecast[1].wind.toFixed(1);
+            arrowH.style.transform = "rotate(" + (forecast[1].direction + 180) + "deg)";
+            wackH.innerHTML = forecast[1].wack.toFixed(0);
         })
 }
 
-function calcWack() {
-    let wack = avgWind * 1.3 * windDirScore(avgDirection);
-    wackS.innerHTML = wack.toFixed(0);
-}
-
-function test(temp, wind, dir) {
-    avgTemp = temp;
-    avgWind = wind;
-    avgDirection = dir;
-    tempS.innerHTML = avgTemp.toFixed(0);
-    windS.innerHTML = avgWind.toFixed(1);
-    arrowS.style.transform = "rotate(" + (avgDirection + 180) + "deg)";
-    calcWack();
+function calcWack(wind, direction) {
+    let wack = wind * 1.3 * windDirScore(direction);
+    return wack;
 }
 
 function windDirScore(dir) {
@@ -77,4 +70,13 @@ function windDirScore(dir) {
         return 0.6;
     else
         alert("error in windDirScore");
+}
+
+class Hour {
+    constructor(temp, wind, direction) {
+        this.temp = temp;
+        this.wind = wind;
+        this.direction = direction;
+        this.wack = calcWack(wind, direction);
+    }
 }
