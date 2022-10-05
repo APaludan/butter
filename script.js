@@ -1,4 +1,5 @@
 const url = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
+const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 const windN = document.getElementById("wind");
 const tempN = document.getElementById("temp");
 const arrowN = document.getElementById("arrow");
@@ -8,6 +9,14 @@ const windH = document.getElementById("wind1");
 const tempH = document.getElementById("temp1");
 const arrowH = document.getElementById("arrow1");
 const wackH = document.getElementById("wack1");
+
+if (isDarkMode) {
+    document.getElementsByTagName("html")[0].className = "dark";
+}
+else {
+    document.getElementsByTagName("html")[0].className = "";
+}
+
 
 update()
 
