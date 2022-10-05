@@ -13,12 +13,21 @@ function update() {
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            let now = data["properties"]["timeseries"][0]["data"];
+            let nowTime = new Date();
+            let utcHours = nowTime.getUTCHours();
+            let index = 0;
+
+            let timeseries = data["properties"]["timeseries"];
+            while (timeseries[index]["time"].substring(11, 13) != utcHours.toString()) {
+                index++;
+            }
+
+            let now = timeseries[index]["data"];
             let temp = now["instant"]["details"]["air_temperature"];
             let wind = now["instant"]["details"]["wind_speed"];
             let direction = now["instant"]["details"]["wind_from_direction"];
 
-            let next = data["properties"]["timeseries"][1]["data"];
+            let next = timeseries[index + 1]["data"];
             let nextTemp = next["instant"]["details"]["air_temperature"];
             let nextWind = next["instant"]["details"]["wind_speed"];
             let nextDirection = next["instant"]["details"]["wind_from_direction"];
@@ -36,7 +45,6 @@ function update() {
 
 function calcWack() {
     let wack = avgWind * 1.3 * windDirScore(avgDirection);
-    console.log("wack: " + wack);
     wackS.innerHTML = wack.toFixed(0);
 }
 
