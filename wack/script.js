@@ -7,40 +7,40 @@ let avgTemp = null;
 let avgWind = null;
 let avgDirection = null;
 
-test(15, 5, 270)
+update()
 
 function update() {
     fetch(url)
-    .then(response => response.json())
-    .then(data => {
-        let now = data["properties"]["timeseries"][0]["data"];
-        let temp = now["instant"]["details"]["air_temperature"];
-        let wind = now["instant"]["details"]["wind_speed"];
-        let direction = now["instant"]["details"]["wind_from_direction"];
+        .then(response => response.json())
+        .then(data => {
+            let now = data["properties"]["timeseries"][0]["data"];
+            let temp = now["instant"]["details"]["air_temperature"];
+            let wind = now["instant"]["details"]["wind_speed"];
+            let direction = now["instant"]["details"]["wind_from_direction"];
 
-        let next = data["properties"]["timeseries"][1]["data"];
-        let nextTemp = next["instant"]["details"]["air_temperature"];
-        let nextWind = next["instant"]["details"]["wind_speed"];
-        let nextDirection = next["instant"]["details"]["wind_from_direction"];
+            let next = data["properties"]["timeseries"][1]["data"];
+            let nextTemp = next["instant"]["details"]["air_temperature"];
+            let nextWind = next["instant"]["details"]["wind_speed"];
+            let nextDirection = next["instant"]["details"]["wind_from_direction"];
 
-        avgTemp = (temp + nextTemp) / 2;
-        avgWind = (wind + nextWind) / 2;
-        avgDirection = (direction + nextDirection) / 2;
+            avgTemp = (temp + nextTemp) / 2;
+            avgWind = (wind + nextWind) / 2;
+            avgDirection = (direction + nextDirection) / 2;
 
-        tempS.innerHTML = avgTemp.toFixed(0);
-        windS.innerHTML = avgWind.toFixed(1);
-        arrowS.style.transform = "rotate(" + (avgDirection + 180) + "deg)";
-        calcWack();
-    })
+            tempS.innerHTML = avgTemp.toFixed(0);
+            windS.innerHTML = avgWind.toFixed(1);
+            arrowS.style.transform = "rotate(" + (avgDirection + 180) + "deg)";
+            calcWack();
+        })
 }
 
 function calcWack() {
-    let wack = avgWind / 10 * windDirScore(avgDirection);
+    let wack = avgWind * 1.3 * windDirScore(avgDirection);
     console.log("wack: " + wack);
-    wackS.innerHTML = wack.toFixed(2);
+    wackS.innerHTML = wack.toFixed(0);
 }
 
-function test(temp, wind, dir){
+function test(temp, wind, dir) {
     avgTemp = temp;
     avgWind = wind;
     avgDirection = dir;
@@ -51,24 +51,22 @@ function test(temp, wind, dir){
 }
 
 function windDirScore(dir) {
-    let score = 0;
     if (dir >= 0 && dir <= 45)
-        score = 0.6;
+        return 0.6;
     else if (dir >= 45 && dir <= 90)
-        score = 0.5;
+        return 0.5;
     else if (dir >= 90 && dir <= 135)
-        score = 0.35;
+        return 0.35;
     else if (dir >= 135 && dir <= 180)
-        score = 0.15;
+        return 0.2;
     else if (dir >= 180 && dir <= 225)
-        score = 0.2;
+        return 0.2;
     else if (dir >= 225 && dir <= 270)
-        score = 0.6;
+        return 0.6;
     else if (dir >= 270 && dir <= 315)
-        score = 0.7;
+        return 0.7;
     else if (dir >= 315 && dir <= 360)
-        score = 0.6;
+        return 0.6;
     else
         alert("error in windDirScore");
-    return score;
 }
