@@ -31,7 +31,7 @@ function update() {
                 let now = timeseries[i]["data"];
                 let temp = now["instant"]["details"]["air_temperature"];
                 let wind = now["instant"]["details"]["wind_speed"];
-                let direction = now["instant"]["details"]["wind_from_direction"];
+                let direction = (now["instant"]["details"]["wind_from_direction"] - 180) % 360;
                 forecast.push(new Hour(hour, temp, wind, direction));
             }
             console.log(forecast);
@@ -55,8 +55,7 @@ function update() {
 }
 
 function calcWack(wind, direction) {
-    let invertedDir = (direction - 180) % 360;
-    let wack = wind * 1.3 * windDirScore(invertedDir);
+    let wack = wind * 1.3 * windDirScore(direction);
     return wack;
 }
 
