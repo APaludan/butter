@@ -1,13 +1,12 @@
 const url = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
-const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 const tableBody = document.getElementById("tbody");
 
-if (isDarkMode) {
+const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+if (isDarkMode)
     document.getElementsByTagName("html")[0].className = "dark";
-}
-else {
+else
     document.getElementsByTagName("html")[0].className = "";
-}
+
 
 
 update()
@@ -49,7 +48,6 @@ function update() {
                     </td>
                     `;
                 tableBody.appendChild(row);
-                
             }
         })
 }
