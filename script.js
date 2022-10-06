@@ -8,7 +8,6 @@ else
     document.getElementsByTagName("html")[0].className = "";
 
 
-
 update()
 
 function update() {
