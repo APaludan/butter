@@ -32,6 +32,7 @@ function update() {
             while (timeseries[index]["time"].substring(11, 13) != utcHours.toString().padStart(2, "0")) {
                 index++;
             }
+            console.log("index: " + index);
             let forecast = [];
             for (let i = index; i < 5; i++) {
                 let now = timeseries[i]["data"];
