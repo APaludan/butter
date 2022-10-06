@@ -1,14 +1,6 @@
 const url = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
 const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-const windN = document.getElementById("wind");
-const tempN = document.getElementById("temp");
-const arrowN = document.getElementById("arrow");
-const wackN = document.getElementById("wack");
-
-const windH = document.getElementById("wind1");
-const tempH = document.getElementById("temp1");
-const arrowH = document.getElementById("arrow1");
-const wackH = document.getElementById("wack1");
+const list = document.getElementById("list");
 
 if (isDarkMode) {
     document.getElementsByTagName("html")[0].className = "dark";
@@ -24,18 +16,18 @@ function update() {
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            let nowTime = new Date();
-            let utcHours = nowTime.getUTCHours();
+            let dateTime = new Date();
+            let utcHours = dateTime.getUTCHours();
             let index = 0;
 
             let timeseries = data["properties"]["timeseries"];
             while (timeseries[index]["time"].substring(11, 13) != utcHours.toString().padStart(2, "0")) {
                 index++;
             }
-            console.log("index: " + index);
+            console.log("index: " + index)
             let forecast = [];
-            for (let i = index; i < 5; i++) {
-                let hour = timeseries[i]["time"].substring(11, 13);
+            for (let i = index; i <= 24; i++) {
+                let hour = new Date(timeseries[i]["time"]);
                 let now = timeseries[i]["data"];
                 let temp = now["instant"]["details"]["air_temperature"];
                 let wind = now["instant"]["details"]["wind_speed"];
@@ -43,17 +35,22 @@ function update() {
                 forecast.push(new Hour(hour, temp, wind, direction));
             }
             console.log(forecast);
-
-
-            tempN.innerHTML = forecast[0].temp.toFixed(0);
-            windN.innerHTML = forecast[0].wind.toFixed(1);
-            arrowN.style.transform = "rotate(" + (forecast[0].direction + 180) + "deg)";
-            wackN.innerHTML = forecast[0].wack.toFixed(0);
-
-            tempH.innerHTML = forecast[1].temp.toFixed(0);
-            windH.innerHTML = forecast[1].wind.toFixed(1);
-            arrowH.style.transform = "rotate(" + (forecast[1].direction + 180) + "deg)";
-            wackH.innerHTML = forecast[1].wack.toFixed(0);
+            for (let i = 0; i < forecast.length; i++) {
+                let dataPoint = document.createElement("div");
+                dataPoint.innerHTML = `
+                    <h4>Kl <span>${forecast[i].hour.getHours()}</span>:00</h4>
+                    <p>Temperatur: <span>${forecast[i].temp.toFixed(0)}</span> &deg</p>
+                    <p>
+                        Vind:
+                        <span>${forecast[i].wind.toFixed(1)}</span>
+                        m/s
+                        <img style="height: 20px; margin-left: 10px; transform: rotate(${forecast[i].direction}deg)" src="arrow.png" />
+                    </p>
+                    <p>Score: <span>${forecast[i].wack.toFixed(0)}</span></p>
+                    `;
+                list.appendChild(dataPoint);
+                
+            }
         })
 }
 
