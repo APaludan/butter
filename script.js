@@ -30,7 +30,7 @@ function update() {
             console.log(data);
 
             let timeseries = data["properties"]["timeseries"];
-            while (timeseries[index]["time"].substring(11, 13) != utcHours.toString()) {
+            while (timeseries[index]["time"].substring(11, 13) != utcHours.toPrecision(2)) {
                 index++;
             }
             let forecast = [];
