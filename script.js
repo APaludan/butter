@@ -59,23 +59,24 @@ function calcWack(wind, direction) {
     return wack;
 }
 
-function windDirScore(dir) {
+function windDirScore(direction) {
+    let dir = (direction + 180) % 360;
     if (dir >= 0 && dir <= 45)
-        return 0.65;
+        return 0.7;
     else if (dir >= 45 && dir <= 90)
         return 0.6;
     else if (dir >= 90 && dir <= 135)
         return 0.35;
     else if (dir >= 135 && dir <= 180)
-        return 0.2;
+        return 0.25;
     else if (dir >= 180 && dir <= 225)
-        return 0.2;
+        return 0.25;
     else if (dir >= 225 && dir <= 270)
-        return 0.6;
+        return 0.5;
     else if (dir >= 270 && dir <= 315)
         return 0.8;
     else if (dir >= 315 && dir <= 360)
-        return 0.6;
+        return 0.7;
     else
         alert("error in windDirScore");
 }
