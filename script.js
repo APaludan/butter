@@ -27,10 +27,9 @@ function update() {
             let nowTime = new Date();
             let utcHours = nowTime.getUTCHours();
             let index = 0;
-            console.log(data);
 
             let timeseries = data["properties"]["timeseries"];
-            while (timeseries[index]["time"].substring(11, 13) != utcHours.toPrecision(2)) {
+            while (timeseries[index]["time"].substring(11, 13) != utcHours.toString().padStart(2, "0")) {
                 index++;
             }
             let forecast = [];
