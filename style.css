@@ -10,8 +10,42 @@ body {
     max-width: 960px;
     margin: 0 auto;
     padding: 0 20px;
-    box-sizing: border-box; }
+    box-sizing: border-box;
+}
+@media (min-width: 400px) {
+    .container {
+        width: 85%;
+        padding: 0; }
+    }
+@media (min-width: 550px) {
+    .container {
+        width: 80%;
+    }
+}
 
 .dark {
     filter: invert(1);
+}
+
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #E1E1E1;
+}
+th:first-child,td:first-child {
+  padding-left: 0;
+}
+th:last-child, td:last-child {
+  padding-right: 0;
+}
+
+.container:after, .row:after, .u-cf {
+  content: "";
+  display: table;
+  clear: both;
 }

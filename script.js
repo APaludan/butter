@@ -1,6 +1,6 @@
 const url = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
 const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-const list = document.getElementById("list");
+const tableBody = document.getElementById("tbody");
 
 if (isDarkMode) {
     document.getElementsByTagName("html")[0].className = "dark";
@@ -36,19 +36,19 @@ function update() {
             }
             console.log(forecast);
             for (let i = 0; i < forecast.length; i++) {
-                let dataPoint = document.createElement("div");
-                dataPoint.innerHTML = `
-                    <h4>Kl <span>${forecast[i].hour.getHours()}</span>:00</h4>
-                    <p>Temperatur: <span>${forecast[i].temp.toFixed(0)}</span> &deg</p>
-                    <p>
-                        Vind:
-                        <span>${forecast[i].wind.toFixed(1)}</span>
-                        m/s
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${forecast[i].hour.getHours()}:00</td>
+                    <td>${forecast[i].temp.toFixed(0)}&deg</td>
+                    <td>
+                        ${forecast[i].wind.toFixed(1)}
                         <img style="height: 20px; margin-left: 10px; transform: rotate(${forecast[i].direction}deg)" src="arrow.png" />
-                    </p>
-                    <p>Score: <span>${forecast[i].wack.toFixed(0)}</span></p>
+                    </td>
+                    <td>
+                        ${forecast[i].wack.toFixed(0)}
+                    </td>
                     `;
-                list.appendChild(dataPoint);
+                tableBody.appendChild(row);
                 
             }
         })

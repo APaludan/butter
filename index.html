@@ -15,17 +15,26 @@
         <h2>Aacp</h2>
         <p>Score: 0 er butter, 10 er wack.</p>
         <div id="template" style="display: none;">
-            <h4>Kl <span id="time"></span>:00</h4>
+            <h4>Kl 00:00</h4>
             <p>Temperatur: <span id="temp"></span> &deg</p>
             <p>
-                Vind:
-                <span id="wind"></span>
-                m/s
+                Vind: 0 m/s
                 <img id="arrow" style="height: 20px; margin-left: 10px;" src="arrow.png" />
             </p>
-            <p>Score: <span id="wack"></span></p>
+            <p>Score: 0</p>
         </div>
-        <div id="list"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Temperatur</th>
+                    <th>Vind</th>
+                    <th>Score</th>
+                </tr>
+                <tbody id="tbody">
+
+                </tbody>
+        </table>
     </div>
     <script src="script.js"></script>
 </body>
