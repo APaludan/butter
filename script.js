@@ -35,11 +35,12 @@ function update() {
             console.log("index: " + index);
             let forecast = [];
             for (let i = index; i < 5; i++) {
+                let hour = timeseries[i]["time"].substring(11, 13);
                 let now = timeseries[i]["data"];
                 let temp = now["instant"]["details"]["air_temperature"];
                 let wind = now["instant"]["details"]["wind_speed"];
                 let direction = now["instant"]["details"]["wind_from_direction"];
-                forecast.push(new Hour(temp, wind, direction));
+                forecast.push(new Hour(hour, temp, wind, direction));
             }
             console.log(forecast);
 
@@ -83,7 +84,8 @@ function windDirScore(dir) {
 }
 
 class Hour {
-    constructor(temp, wind, direction) {
+    constructor(hour, temp, wind, direction) {
+        this.hour = hour
         this.temp = temp;
         this.wind = wind;
         this.direction = direction;
