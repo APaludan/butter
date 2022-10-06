@@ -25,7 +25,7 @@ function update() {
             }
             console.log("index: " + index)
             let forecast = [];
-            for (let i = index; i <= 24; i++) {
+            for (let i = index; i <= index + 24; i++) {
                 let hour = new Date(timeseries[i]["time"]);
                 let now = timeseries[i]["data"];
                 let temp = now["instant"]["details"]["air_temperature"];
