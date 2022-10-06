@@ -94,21 +94,17 @@ function scoreColor(score) {
         case 1:
             return "#32961f";
         case 2:
-            return "#4d9c1f";
+            return "#559e1f";
         case 3:
-            return "#6aa21f";
+            return "#7ba61f";
         case 4:
-            return "#89a820";
+            return "#a6ad20";
         case 5:
-            return "#abae20";
+            return "#b59620";
         case 6:
-            return "#b59920";
+            return "#be731f";
         case 7:
-            return "#bb7f20";
-        case 8:
-            return "#c1621f";
-        case 9:
-            return "#c8421f";
+            return "#c64b1f";
         default:
             return "#ce1f1f";
     }
