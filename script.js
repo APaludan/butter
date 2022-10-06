@@ -53,11 +53,11 @@ function update() {
 }
 
 function calcWack(wind, direction) {
-    let wack = wind * windDirScore(direction);
+    let wack = wind * windDirMultiplier(direction);
     return Math.round(wack);
 }
 
-function windDirScore(direction) {
+function windDirMultiplier(direction) {
     let dir = (direction + 180) % 360;
     if (dir >= 0 && dir <= 45)
         return 0.8;
