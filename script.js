@@ -44,8 +44,8 @@ function update() {
                         ${forecast[i].wind.toFixed(1)}
                         <img style="height: 20px; margin-left: 10px; transform: rotate(${forecast[i].direction}deg)" src="arrow.png" />
                     </td>
-                    <td>
-                        ${forecast[i].wack.toFixed(0)}
+                    <td style="color: ${scoreColor(forecast[i].wack)}; font-weight: bold;">
+                        ${forecast[i].wack}
                     </td>
                     `;
                 tableBody.appendChild(row);
@@ -56,7 +56,7 @@ function update() {
 
 function calcWack(wind, direction) {
     let wack = wind * 1.3 * windDirScore(direction);
-    return wack;
+    return Math.round(wack);
 }
 
 function windDirScore(direction) {
@@ -88,5 +88,30 @@ class Hour {
         this.wind = wind;
         this.direction = direction;
         this.wack = calcWack(wind, direction);
+    }
+}
+
+function scoreColor(score) {
+    switch (score) {
+        case 1:
+            return "#32961f";
+        case 2:
+            return "#4d9c1f";
+        case 3:
+            return "#6aa21f";
+        case 4:
+            return "#89a820";
+        case 5:
+            return "#abae20";
+        case 6:
+            return "#b59920";
+        case 7:
+            return "#bb7f20";
+        case 8:
+            return "#c1621f";
+        case 9:
+            return "#c8421f";
+        default:
+            return "#ce1f1f";
     }
 }
