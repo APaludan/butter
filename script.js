@@ -61,9 +61,9 @@ function calcWack(wind, direction) {
 
 function windDirScore(dir) {
     if (dir >= 0 && dir <= 45)
-        return 0.6;
+        return 0.65;
     else if (dir >= 45 && dir <= 90)
-        return 0.5;
+        return 0.6;
     else if (dir >= 90 && dir <= 135)
         return 0.35;
     else if (dir >= 135 && dir <= 180)
