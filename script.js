@@ -4,10 +4,10 @@ if (isDarkMode)
 else
     document.getElementsByTagName("html")[0].className = "";
 
-class Weight {
-    constructor(fromDirection, multiplier) {
+class Multiplier {
+    constructor(fromDirection, value) {
         this.fromDirection = fromDirection;
-        this.multiplier = multiplier;
+        this.value = value;
     }
 }
 
@@ -98,31 +98,31 @@ function scoreColor(score) {
     }
 }
 
-// must have weights at 0 and 360
-function getWeights() {
-    let weights = [];
-    weights.push(new Weight(0, 0.9));
-    weights.push(new Weight(90, 0.6));
-    weights.push(new Weight(180, 0.4));
-    weights.push(new Weight(240, 0.5));
-    weights.push(new Weight(300, 0.75));
-    weights.push(new Weight(360, 0.9));
-    return weights;
+// must have multiplier at 0 and 360
+function getMultipliers() {
+    let m = [];
+    m.push(new Multiplier(0, 0.9));
+    m.push(new Multiplier(90, 0.6));
+    m.push(new Multiplier(180, 0.4));
+    m.push(new Multiplier(240, 0.5));
+    m.push(new Multiplier(300, 0.75));
+    m.push(new Multiplier(360, 0.9));
+    return m;
 }
 
 function buildWindDirMultiplierArray() {
     let array = [];
-    let weights = getWeights();
-    weights.forEach(weight => {
-        array[weight.fromDirection] = weight.multiplier;
+    let multipliers = getMultipliers();
+    multipliers.forEach(m => {
+        array[m.fromDirection] = m.value;
     });
 
-    for (let i = 0; i < weights.length; i++) {
-        if (weights[i + 1] == undefined || weights[i + 1] == null) {
+    for (let i = 0; i < multipliers.length; i++) {
+        if (multipliers[i + 1] == undefined || multipliers[i + 1] == null) {
             break;
         }
-        let start = weights[i].fromDirection;
-        let end = weights[i + 1].fromDirection;
+        let start = multipliers[i].fromDirection;
+        let end = multipliers[i + 1].fromDirection;
         for (let j = start; j < end; j++) {
             let distance = end - start;
             array[j] = linearInterpolation(array[start], array[end], (j - start) / distance);
