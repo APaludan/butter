@@ -125,7 +125,7 @@ function buildWindDirMultiplierArray() {
         let end = weights[i + 1].fromDirection;
         for (let j = start; j < end; j++) {
             let distance = end - start;
-            array[j] = lerp(array[start], array[end], (j - start) / distance);
+            array[j] = linearInterpolation(array[start], array[end], (j - start) / distance);
         }
     }
 
@@ -134,6 +134,6 @@ function buildWindDirMultiplierArray() {
 }
 
 
-function lerp(a, b, t) {
+function linearInterpolation(a, b, t) {
     return a + (b - a) * t;
 }
