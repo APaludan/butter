@@ -1,11 +1,19 @@
-const url = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
-const tableBody = document.getElementById("tbody");
-
 const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 if (isDarkMode)
     document.getElementsByTagName("html")[0].className = "dark";
 else
     document.getElementsByTagName("html")[0].className = "";
+
+class Weight {
+    constructor(fromDirection, multiplier) {
+        this.fromDirection = fromDirection;
+        this.multiplier = multiplier;
+    }
+}
+
+const url = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
+const tableBody = document.getElementById("tbody");
+let windDirMultiplierArray = buildWindDirMultiplierArray();
 
 
 update()
@@ -22,14 +30,14 @@ function update() {
             while (timeseries[index]["time"].substring(11, 13) != utcHours.toString().padStart(2, "0")) {
                 index++;
             }
-            console.log("index: " + index)
+
             let forecast = [];
             for (let i = index; i <= index + 24; i++) {
                 let hour = new Date(timeseries[i]["time"]);
                 let now = timeseries[i]["data"];
                 let temp = now["instant"]["details"]["air_temperature"];
                 let wind = now["instant"]["details"]["wind_speed"];
-                let direction = (now["instant"]["details"]["wind_from_direction"] - 180) % 360;
+                let direction = now["instant"]["details"]["wind_from_direction"];
                 forecast.push(new Hour(hour, temp, wind, direction));
             }
             console.log(forecast);
@@ -40,7 +48,7 @@ function update() {
                     <td>${forecast[i].temp.toFixed(0)}&deg</td>
                     <td>
                         ${forecast[i].wind.toFixed(1)}
-                        <img style="height: 20px; margin-left: 10px; transform: rotate(${forecast[i].direction}deg)" src="arrow.png" />
+                        <img style="height: 20px; margin-left: 10px; transform: rotate(${forecast[i].toDirection}deg)" src="arrow.png" />
                     </td>
                     <td style="color: ${scoreColor(forecast[i].wack)}; font-weight: bold;">
                         ${forecast[i].wack}
@@ -52,30 +60,8 @@ function update() {
 }
 
 function calcWack(wind, direction) {
-    let wack = wind * windDirMultiplier(direction);
+    let wack = wind * windDirMultiplierArray[Math.round(direction)];
     return Math.round(wack);
-}
-
-function windDirMultiplier(direction) {
-    let dir = (direction + 180) % 360;
-    if (dir >= 0 && dir <= 45)
-        return 0.8;
-    else if (dir >= 45 && dir <= 90)
-        return 0.7;
-    else if (dir >= 90 && dir <= 135)
-        return 0.7;
-    else if (dir >= 135 && dir <= 180)
-        return 0.6;
-    else if (dir >= 180 && dir <= 225)
-        return 0.7;
-    else if (dir >= 225 && dir <= 270)
-        return 0.8;
-    else if (dir >= 270 && dir <= 315)
-        return 1;
-    else if (dir >= 315 && dir <= 360)
-        return 0.9;
-    else
-        alert("error in windDirScore");
 }
 
 class Hour {
@@ -83,10 +69,13 @@ class Hour {
         this.hour = hour
         this.temp = temp;
         this.wind = wind;
-        this.direction = direction;
+        this.fromDirection = direction;
+        this.toDirection = (direction + 180) % 360;
         this.wack = calcWack(wind, direction);
     }
 }
+
+
 
 function scoreColor(score) {
     switch (score) {
@@ -107,4 +96,44 @@ function scoreColor(score) {
         default:
             return "#ce1f1f";
     }
+}
+
+// must have weights at 0 and 360
+function getWeights() {
+    let weights = [];
+    weights.push(new Weight(0, 0.9));
+    weights.push(new Weight(90, 0.6));
+    weights.push(new Weight(180, 0.4));
+    weights.push(new Weight(240, 0.5));
+    weights.push(new Weight(300, 0.75));
+    weights.push(new Weight(360, 0.9));
+    return weights;
+}
+
+function buildWindDirMultiplierArray() {
+    let array = [];
+    let weights = getWeights();
+    weights.forEach(weight => {
+        array[weight.fromDirection] = weight.multiplier;
+    });
+
+    for (let i = 0; i < weights.length; i++) {
+        if (weights[i + 1] == undefined || weights[i + 1] == null) {
+            break;
+        }
+        let start = weights[i].fromDirection;
+        let end = weights[i + 1].fromDirection;
+        for (let j = start; j < end; j++) {
+            let distance = end - start;
+            array[j] = lerp(array[start], array[end], (j - start) / distance);
+        }
+    }
+
+    console.log(array);
+    return array;
+}
+
+
+function lerp(a, b, t) {
+    return a + (b - a) * t;
 }
