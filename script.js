@@ -79,6 +79,8 @@ class Hour {
 
 function scoreColor(score) {
     switch (score) {
+        case 0;
+            return "#32961f";
         case 1:
             return "#32961f";
         case 2:
