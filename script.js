@@ -123,13 +123,13 @@ function buildWindDirMultiplierArray() {
 
     console.log(array);
     let chart = document.getElementById("chart");
-    array.forEach(element => {
+    for (let i = 0; i < array.length; i += 1) {
         let div = document.createElement("div");
-        div.style.height = element * 100 + "px";
-        div.style.backgroundColor = scoreColor(Math.round(element * 8));
+        div.style.height = array[i] * 100 + "px";
+        div.style.backgroundColor = scoreColor(Math.round(array[i] * 8));
         div.style.flexGrow = "1";
         chart.appendChild(div);
-    });
+    };
     return array;
 }
 
