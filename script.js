@@ -1,9 +1,3 @@
-const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-if (isDarkMode)
-    document.getElementsByTagName("html")[0].className = "dark";
-else
-    document.getElementsByTagName("html")[0].className = "";
-
 class Multiplier {
     constructor(fromDirection, value) {
         this.fromDirection = fromDirection;
@@ -104,7 +98,7 @@ function scoreColor(score) {
 function getMultipliers() {
     let m = [];
     m.push(new Multiplier(0, 0.9));
-    m.push(new Multiplier(90, 0.6));
+    m.push(new Multiplier(100, 0.6));
     m.push(new Multiplier(180, 0.4));
     m.push(new Multiplier(240, 0.5));
     m.push(new Multiplier(300, 0.75));
@@ -128,6 +122,14 @@ function buildWindDirMultiplierArray() {
     }
 
     console.log(array);
+    let chart = document.getElementById("chart");
+    array.forEach(element => {
+        let div = document.createElement("div");
+        div.style.height = element * 100 + "px";
+        div.style.backgroundColor = scoreColor(Math.round(element * 8));
+        div.style.flexGrow = "1";
+        chart.appendChild(div);
+    });
     return array;
 }
 

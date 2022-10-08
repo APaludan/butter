@@ -49,6 +49,7 @@ body {
         width: 65%;
     }
 }
+
 @media (min-width: 1150px) {
     .container {
         width: 55%;
@@ -81,4 +82,23 @@ td:first-child {
 th:last-child,
 td:last-child {
     padding-right: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.chart {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: -10px;
+    width: 100%;
+}
+
+.chart-div {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: baseline;
+    width: 100%;
 }

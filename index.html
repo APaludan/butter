@@ -13,8 +13,23 @@
 <body>
     <div class="container">
         <h1>Er det butter?</h1>
-        <h2>Aacp</h2>
+        <h2 id="toggle">Aacp</h2>
         <p>Score: 0 er butter, 10 er wack.</p>
+        <div id="chartDiv" class="hidden">
+            <h3>Wind from direction multiplier</h3>
+            <div id="chart" class="chart-div"></div>
+            <div class="chart">
+                <p>N</p>
+                <p>NW</p>
+                <p>W</p>
+                <p>SW</p>
+                <p>S</p>
+                <p>SE</p>
+                <p>E</p>
+                <p>NE</p>
+                <p>N</p>
+            </div>
+        </div>
         <table>
             <thead>
                 <tr>
@@ -29,6 +44,7 @@
         </table>
     </div>
     <script src="script.js"></script>
+    <script src="extras.js"></script>
 </body>
 
 </html>
