@@ -113,19 +113,15 @@ function getMultipliers() {
 function buildWindDirMultiplierArray() {
     let array = [];
     let multipliers = getMultipliers();
-    multipliers.forEach(m => {
-        array[m.fromDirection] = m.value;
-    });
 
     for (let i = 0; i < multipliers.length; i++) {
-        if (multipliers[i + 1] == undefined || multipliers[i + 1] == null) {
-            break;
-        }
+        if (multipliers[i + 1] == undefined) break;
+        
         let start = multipliers[i].fromDirection;
         let end = multipliers[i + 1].fromDirection;
-        for (let j = start; j < end; j++) {
+        for (let j = start; j <= end; j++) {
             let distance = end - start;
-            array[j] = linearInterpolation(array[start], array[end], (j - start) / distance);
+            array[j] = linearInterpolation(multipliers[i].value, multipliers[i + 1].value, (j - start) / distance);
         }
     }
 
