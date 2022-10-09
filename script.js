@@ -28,10 +28,10 @@ function update() {
             let forecast = [];
             for (let i = index; i <= index + 24; i++) {
                 let hour = new Date(timeseries[i]["time"]);
-                let now = timeseries[i]["data"];
-                let temp = now["instant"]["details"]["air_temperature"];
-                let wind = now["instant"]["details"]["wind_speed"];
-                let direction = now["instant"]["details"]["wind_from_direction"];
+                let details = timeseries[i]["data"]["instant"]["details"];
+                let temp = details["air_temperature"];
+                let wind = details["wind_speed"];
+                let direction = details["wind_from_direction"];
                 forecast.push(new Hour(hour, temp, wind, direction));
             }
             console.log(forecast);
@@ -68,8 +68,6 @@ class Hour {
         this.wack = calcWack(wind, direction);
     }
 }
-
-
 
 function scoreColor(score) {
     switch (score) {
