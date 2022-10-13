@@ -6,7 +6,7 @@ class Multiplier {
 }
 
 const url = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
-const tableBody = document.getElementById("tbody");
+const table = document.getElementById("table");
 let windDirMultiplierArray = buildWindDirMultiplierArray();
 
 
@@ -26,7 +26,7 @@ function update() {
             }
 
             let forecast = [];
-            for (let i = index; i <= index + 24; i++) {
+            for (let i = index; i <= 75 - index; i++) {
                 let hour = new Date(timeseries[i]["time"]);
                 let details = timeseries[i]["data"]["instant"]["details"];
                 let temp = details["air_temperature"];
@@ -35,9 +35,18 @@ function update() {
                 forecast.push(new Hour(hour, temp, wind, direction));
             }
             console.log(forecast);
+
             for (let i = 0; i < forecast.length; i++) {
-                let row = document.createElement("tr");
-                row.innerHTML = `
+                if (i === 0 || forecast[i-1].hour.getDate() < forecast[i].hour.getDate()) {
+                    let date = document.createElement("tr");
+                    date.innerHTML = `<h5>${getDay(forecast[i].hour.getDay())}<br>${forecast[i].hour.toLocaleDateString().slice(0, -5).replace(".", "/")}</h5>`;
+                    table.appendChild(date);
+                    let header = document.createElement("thead");
+                    header.innerHTML = getTableHeader();
+                    table.appendChild(header);
+                }
+                let row = document.createElement("tbody");
+                row.innerHTML = `<tr>
                     <td>${forecast[i].hour.getHours()}:00</td>
                     <td>${forecast[i].temp.toFixed(0)}&deg</td>
                     <td>
@@ -47,8 +56,9 @@ function update() {
                     <td style="color: ${scoreColor(forecast[i].wack)}; font-weight: bold;">
                         ${forecast[i].wack}
                     </td>
+                    </tr>
                     `;
-                tableBody.appendChild(row);
+                table.appendChild(row);
             }
         })
 }
@@ -134,4 +144,33 @@ function buildWindDirMultiplierArray() {
 
 function linearInterpolation(a, b, t) {
     return a + (b - a) * t;
+}
+
+function getTableHeader(){
+    return `<thead>
+        <tr>
+            <th>Time</th>
+            <th>Temperatur</th>
+            <th>Vind</th>
+            <th>Score</th>
+        </tr>`
+}
+
+function getDay(number) {
+    switch (number) {
+        case 0:
+            return "Søndag";
+        case 1:
+            return "Mandag";
+        case 2:
+            return "Tirsdag";
+        case 3:
+            return "Onsdag";
+        case 4:
+            return "Torsdag";
+        case 5:
+            return "Fredag";
+        case 6:
+            return "Lørdag";
+    }
 }
