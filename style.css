@@ -84,6 +84,14 @@ td:last-child {
     padding-right: 0;
 }
 
+tr:hover {
+    background-color: #e9e9e9;
+}
+
+tr:not(:hover) {
+    transition-duration: 100ms;
+}
+
 .hidden {
     display: none;
 }
