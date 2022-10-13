@@ -39,12 +39,16 @@ function update() {
             for (let i = 0; i < forecast.length; i++) {
                 if (i === 0 || forecast[i-1].hour.getDate() < forecast[i].hour.getDate()) {
                     let date = document.createElement("tr");
-                    date.innerHTML = `<h5>${getDay(forecast[i].hour.getDay())}<br>${forecast[i].hour.toLocaleDateString().slice(0, -5).replace(".", "/")}</h5>`;
+                    date.innerHTML = `<h5 style="margin-bottom: 0px">${getDay(forecast[i].hour.getDay())}<br>${forecast[i].hour.toLocaleDateString().slice(0, -5).replace(".", "/")}</h5>`;
                     table.appendChild(date);
                     let header = document.createElement("thead");
                     header.innerHTML = getTableHeader();
                     table.appendChild(header);
                 }
+                while (forecast[i].hour.getHours() < 6) {
+                    i++;
+                }
+
                 let row = document.createElement("tbody");
                 row.innerHTML = `<tr>
                     <td>${forecast[i].hour.getHours()}:00</td>
