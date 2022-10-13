@@ -17,16 +17,15 @@ function update() {
         .then(response => response.json())
         .then(data => {
             let dateTime = new Date();
-            let utcHours = dateTime.getUTCHours();
             let index = 0;
 
             let timeseries = data["properties"]["timeseries"];
-            while (timeseries[index]["time"].substring(11, 13) != utcHours.toString().padStart(2, "0")) {
+            while (new Date(timeseries[index]["time"]).getHours() != dateTime.getHours()) {
                 index++;
             }
 
             let forecast = [];
-            for (let i = index; i <= 75 - index; i++) {
+            for (let i = index; i < timeseries.length; i++) {
                 let hour = new Date(timeseries[i]["time"]);
                 let details = timeseries[i]["data"]["instant"]["details"];
                 let temp = details["air_temperature"];
@@ -38,18 +37,17 @@ function update() {
 
             for (let i = 0; i < forecast.length; i++) {
                 if (i === 0 || forecast[i-1].hour.getDate() < forecast[i].hour.getDate()) {
-                    let date = document.createElement("tr");
-                    date.innerHTML = `<h5 style="margin-bottom: 0px">${getDay(forecast[i].hour.getDay())}<br>${forecast[i].hour.toLocaleDateString().slice(0, -5).replace(".", "/")}</h5>`;
+                    let date = document.createElement("h5");
+                    date.style.marginBottom = "0px";
+                    date.innerHTML = `${getDay(forecast[i].hour.getDay())}<br>${forecast[i].hour.toLocaleDateString().slice(0, -5).replace(".", "/")}`;
                     table.appendChild(date);
-                    let header = document.createElement("thead");
-                    header.innerHTML = getTableHeader();
-                    table.appendChild(header);
+                    table.appendChild(getTableHeader());
                 }
                 while (forecast[i].hour.getHours() < 6) {
                     i++;
                 }
 
-                let row = document.createElement("tbody");
+                let row = document.createElement("tr");
                 row.innerHTML = `<tr>
                     <td>${forecast[i].hour.getHours()}:00</td>
                     <td>${forecast[i].temp.toFixed(0)}&deg</td>
@@ -151,13 +149,16 @@ function linearInterpolation(a, b, t) {
 }
 
 function getTableHeader(){
-    return `<thead>
-        <tr>
-            <th>Time</th>
-            <th>Temperatur</th>
-            <th>Vind</th>
-            <th>Score</th>
-        </tr>`
+    let header = document.createElement("thead");
+    header.innerHTML = `<thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Temperatur</th>
+                                <th>Vind</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>`
+    return header;
 }
 
 function getDay(number) {
