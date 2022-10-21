@@ -1,0 +1,155 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: rgb(55, 55, 55);
+    background-color: rgb(245, 245, 245);
+}
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+    /* background-color: rgb(245, 245, 245); */
+}
+
+@media (min-width: 400px) {
+    .container {
+        width: 85%;
+        padding: 0;
+    }
+}
+
+@media (min-width: 550px) {
+    .container {
+        width: 80%;
+    }
+}
+
+@media (min-width: 700px) {
+    .container {
+        width: 75%;
+    }
+}
+
+@media (min-width: 850px) {
+    .container {
+        width: 70%;
+    }
+}
+
+@media (min-width: 1000px) {
+    .container {
+        width: 65%;
+    }
+}
+
+@media (min-width: 1150px) {
+    .container {
+        width: 700px;
+    }
+}
+
+
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th,
+td {
+    padding: 9px 15px;
+    text-align: left;
+    border-bottom: 1px solid #E1E1E1;
+}
+
+th:first-child,
+td:first-child {
+    padding-left: 0;
+}
+
+th:last-child,
+td:last-child {
+    padding-right: 0;
+}
+
+tbody tr:hover {
+    background-color: #e9e9e9;
+}
+
+tbody tr:not(:hover) {
+    transition-duration: 100ms;
+}
+
+.hidden {
+    display: none;
+}
+
+.chart {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: -10px;
+    width: 100%;
+}
+
+.chart-div {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: baseline;
+    width: 100%;
+}
+
+h1 {
+    text-align: center;
+}
+
+.transition {
+    animation: slide-up 0.4s ease;
+    animation-fill-mode: forwards;
+}
+
+@keyframes slide-up {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.transition-no-transform {
+    animation: slide-up2 0.4s ease;
+    animation-fill-mode: forwards;
+}
+
+@keyframes slide-up2 {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.waterTemp {
+    color: dodgerblue;
+    font-size: large;
+    font-weight: bold;
+}
+
+.asterisk {
+    color: red;
+    font-size: large;
+    font-weight: bold;
+}

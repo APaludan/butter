@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Er det butter?</title>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; justify-items: center;">
+            <div style="display: flex; justify-content: space-evenly; justify-items: center;">
+                <h1>🧈🧈</h1>
+                <h1>🧈🧈</h1>
+            </div>
+            <div>
+                <h1>Er det butter?</h1>
+            </div>
+            <div style="display: flex; justify-content: space-evenly; justify-items: center;">
+                <h1>🧈🧈</h1>
+                <h1>🧈🧈</h1>
+            </div>
+        </div>
+        <h2 id="toggle">Aalborg Cable Park</h2>
+        <div id="chartDiv" class="hidden">
+            <h3>windFromDirMultiplier (debug)</h3>
+            <div id="chart" class="chart-div"></div>
+            <div class="chart">
+                <p>N</p>
+                <p>NE</p>
+                <p>E</p>
+                <p>SE</p>
+                <p>S</p>
+                <p>SW</p>
+                <p>W</p>
+                <p>NW</p>
+                <p>N</p>
+            </div>
+        </div>
+        <p id="waterTemp"><span class="asterisk">*</span>Vandtemperatur </p>
+        <p>Score: 0 er butter🧈, 10 er wack🌊</p>
+        <div id="tableDiv"></div>
+        <div style="margin-top: 20px; margin-bottom: 20px; opacity: 0;" id="footer">
+            <p id="disclamer"><span class="asterisk">*</span>cirka idk ¯\_(ツ)_/¯</p>
+            <p>Data from The Norwegian Meteorological Institute.</p>
+            <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+                <img alt="Creative Commons-lisens" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+            </a>
+            <br />
+            <p>
+                This data is licensed under a
+                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons
+                    Attribution 4.0 International license.</a>
+            </p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script src="extras.js"></script>
+</body>
+
+</html>
