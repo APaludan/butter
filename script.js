@@ -30,7 +30,7 @@ function update() {
         .then(([wData, sData, tData]) => {
             let span = document.createElement("span");
             span.className = "waterTemp transition-no-transform";
-            span.textContent = tData["properties"]["timeseries"][0]["data"]["instant"]["details"]["sea_water_temperature"] - 2 + "°"
+            span.textContent = Math.ceil(tData["properties"]["timeseries"][0]["data"]["instant"]["details"]["sea_water_temperature"] - 1.6) + "°"
             document.getElementById("waterTemp").appendChild(span);
 
             let index = 0;
