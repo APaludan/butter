@@ -81,6 +81,7 @@ function update() {
 
                     time.textContent = hour.hour.toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
                     temp.textContent = hour.temp.toFixed(0) + "°";
+                    if (temp.textContent === "-0°") temp.textContent = "0°";
                     wind.textContent = hour.wind.toFixed(1);
                     {
                         let img = document.createElement("img");
