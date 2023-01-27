@@ -60,6 +60,8 @@ function update() {
                 let div = document.createElement("div");
                 let date = document.createElement("h4");
                 date.style.marginBottom = "5px";
+                div.style.opacity = "0";
+                div.style.animationDelay = (dIndex * 0.2) + "s";
                 date.textContent = getDay(day[0].hour.getDay()) + " " + day[0].hour.toLocaleDateString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -5).replace(".", "/");
                 div.appendChild(date);
                 tableDiv.appendChild(div);
