@@ -3,21 +3,6 @@
     "name": "Er det butter?",
     "icons": [
       {
-        "src": "favicon-1.png",
-        "type": "image/png",
-        "sizes": "512x512"
-      },
-      {
-        "src": "favicon-1.png",
-        "type": "image/png",
-        "sizes": "192x192"
-      },
-      {
-        "src": "favicon-1.png",
-        "type": "image/png",
-        "sizes": "512x512"
-      },
-      {
         "src": "favicon-0.png",
         "type": "image/png",
         "sizes": "1000x1000"
