@@ -18,8 +18,7 @@
         "sizes": "512x512"
       }
     ],
-    "id": "1",
-    "start_url": "/",
+    "start_url": "/butter", 
     "background_color": "#3367D6",
     "display": "standalone",
     "theme_color": "#3367D6"
