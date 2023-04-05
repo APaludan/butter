@@ -18,19 +18,9 @@
         "sizes": "512x512"
       }
     ],
-    "id": "https://apaludan.github.io/butter/",
-    "start_url": "https://apaludan.github.io/butter/",
+    "id": "1",
+    "start_url": "/",
     "background_color": "#3367D6",
     "display": "standalone",
-    "scope": "https://apaludan.github.io/butter/",
-    "theme_color": "#3367D6",
-    "shortcuts": [
-      {
-        "name": "Butter",
-        "short_name": "Er det butter?",
-        "description": "Butter",
-        "url": "https://apaludan.github.io/butter/",
-        "icons": [{ "src": "favicon-1.png", "sizes": "192x192" }]
-      }
-    ]
+    "theme_color": "#3367D6"
   }
