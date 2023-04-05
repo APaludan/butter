@@ -5,64 +5,149 @@ class Multiplier {
     }
 }
 
-const url = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
-const table = document.getElementById("table");
+Date.prototype.getDKHours = function () {
+    return parseInt(this.toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen", hour: "2-digit", hour12: false }).split(".")[0]);
+}
+
+
+const wUrl = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
+const sUrl = getSUrl();
+const tUrl = "https://api.met.no/weatherapi/oceanforecast/2.0/complete?lat=56.988425&lon=10.286659";
+const tableDiv = document.getElementById("tableDiv");
 let windDirMultiplierArray = buildWindDirMultiplierArray();
 
-
-update()
+try {
+    update()
+} catch (error) {
+    alert(error);
+}
 
 function update() {
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            let dateTime = new Date();
+    Promise.all([
+        fetch(wUrl).then(response => response.json()),
+        fetch(sUrl).then(response => response.json()),
+        fetch(tUrl).then(response => response.json())])
+        .then(([wData, sData, tData]) => {
+            let span = document.createElement("span");
+            span.className = "waterTemp transition-no-transform";
+            span.textContent = Math.ceil(tData["properties"]["timeseries"][0]["data"]["instant"]["details"]["sea_water_temperature"] - 1.6) + "°"
+            document.getElementById("waterTemp").appendChild(span);
+
             let index = 0;
 
-            let timeseries = data["properties"]["timeseries"];
-            while (new Date(timeseries[index]["time"]).getHours() != dateTime.getHours()) {
+            let timeseries = wData["properties"]["timeseries"];
+            while (new Date(timeseries[index]["time"]).getHours() != new Date().getHours()) {
                 index++;
             }
 
             let forecast = [];
+            let day = [];
             for (let i = index; i < timeseries.length; i++) {
                 let hour = new Date(timeseries[i]["time"]);
+                if (hour.getDKHours() < 6) continue;
                 let details = timeseries[i]["data"]["instant"]["details"];
                 let temp = details["air_temperature"];
                 let wind = details["wind_speed"];
                 let direction = details["wind_from_direction"];
-                forecast.push(new Hour(hour, temp, wind, direction));
-            }
-            console.log(forecast);
-
-            for (let i = 0; i < forecast.length; i++) {
-                if (i === 0 || forecast[i-1].hour.getDate() < forecast[i].hour.getDate()) {
-                    let date = document.createElement("h5");
-                    date.style.marginBottom = "0px";
-                    date.innerHTML = `${getDay(forecast[i].hour.getDay())}<br>${forecast[i].hour.toLocaleDateString().slice(0, -5).replace(".", "/")}`;
-                    table.appendChild(date);
-                    table.appendChild(getTableHeader());
+                if (day[0] != undefined && hour.getDKHours() < day[day.length - 1].hour.getDKHours()) {
+                    forecast.push(day);
+                    day = [];
                 }
-                while (forecast[i].hour.getHours() < 6) {
-                    i++;
-                }
-
-                let row = document.createElement("tr");
-                row.innerHTML = `<tr>
-                    <td>${forecast[i].hour.getHours()}:00</td>
-                    <td>${forecast[i].temp.toFixed(0)}&deg</td>
-                    <td>
-                        ${forecast[i].wind.toFixed(1)}
-                        <img style="height: 20px; margin-left: 10px; transform: rotate(${forecast[i].toDirection}deg)" src="arrow.png" />
-                    </td>
-                    <td style="color: ${scoreColor(forecast[i].wack)}; font-weight: bold;">
-                        ${forecast[i].wack}
-                    </td>
-                    </tr>
-                    `;
-                table.appendChild(row);
+                day.push(new Hour(hour, temp, wind, direction));
             }
+
+            forecast.forEach((day, dIndex) => {
+                let div = document.createElement("div");
+                let date = document.createElement("h4");
+                date.style.marginBottom = "5px";
+                div.style.opacity = "0";
+                div.style.animationDelay = (dIndex * 0.2) + "s";
+                date.textContent = getDay(day[0].hour.getDay()) + " " + day[0].hour.toLocaleDateString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -5).replace(".", "/");
+                div.appendChild(date);
+                tableDiv.appendChild(div);
+
+                let table = document.createElement("table");
+                table.appendChild(getTableHeader());
+                let tbody = document.createElement("tbody");
+
+                day.forEach(hour => {
+                    let row = document.createElement("tr");
+                    let time = document.createElement("td");
+                    let temp = document.createElement("td");
+                    let wind = document.createElement("td");
+                    let score = document.createElement("td");
+                    score.style.color = scoreColor(hour.wack);
+                    score.style.fontWeight = "bold";
+
+                    time.textContent = hour.hour.toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+                    temp.textContent = hour.temp.toFixed(0) + "°";
+                    if (temp.textContent === "-0°") temp.textContent = "0°";
+                    wind.textContent = hour.wind.toFixed(1);
+                    {
+                        let img = document.createElement("img");
+                        img.style.transform = "rotate(" + hour.toDirection + "deg)";
+                        img.style.height = "20px";
+                        img.style.marginLeft = "10px";
+                        img.src = "arrow_lowres.png";
+                        wind.appendChild(img);
+                    }
+                    score.textContent = hour.wack;
+
+                    row.appendChild(time);
+                    row.appendChild(temp);
+                    row.appendChild(wind);
+                    row.appendChild(score);
+                    tbody.appendChild(row);
+                });
+                table.appendChild(tbody);
+                div.appendChild(table);
+
+                let sunDiv = document.createElement("div");
+                sunDiv.style.display = "flex";
+                sunDiv.style.justifyContent = "space-evenly";
+
+                let sunriseDiv = document.createElement("div");
+                sunriseDiv.style.display = "flex";
+                sunriseDiv.style.alignItems = "center";
+                sunriseDiv.style.marginLeft = "20px";
+                {
+                    let img = document.createElement("img");
+                    img.style.height = "60px";
+                    img.style.margin = "-5px";
+                    img.src = "sunrise.svg";
+                    sunriseDiv.appendChild(img);
+                }
+                let sunrise = document.createElement("p");
+                sunrise.style.marginLeft = "10px";
+                sunrise.textContent = new Date(sData.location.time[dIndex].sunrise.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+                sunriseDiv.appendChild(sunrise);
+
+                let sunsetDiv = document.createElement("div");
+                sunsetDiv.style.display = "flex";
+                sunsetDiv.style.alignItems = "center";
+                sunsetDiv.style.marginRight = "20px";
+                {
+                    let img = document.createElement("img");
+                    img.style.height = "60px";
+                    img.style.margin = "-5px";
+                    img.src = "sunset.svg";
+                    sunsetDiv.appendChild(img);
+                }
+                let sunset = document.createElement("p");
+                sunset.style.marginLeft = "10px";
+                sunset.textContent = new Date(sData.location.time[dIndex].sunset.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+                sunsetDiv.appendChild(sunset);
+
+                sunDiv.appendChild(sunriseDiv);
+                sunDiv.appendChild(sunsetDiv);
+                div.appendChild(sunDiv);
+                div.className = "transition";
+
+                tableDiv.appendChild(div);
+            });
+            document.getElementById("footer").className = "transition";
         })
+        .catch(error => { console.log(error); alert(error) });
 }
 
 function calcWack(wind, direction) {
@@ -108,8 +193,9 @@ function scoreColor(score) {
 function getMultipliers() {
     let m = [];
     m.push(new Multiplier(0, 0.9));
-    m.push(new Multiplier(100, 0.6));
-    m.push(new Multiplier(180, 0.4));
+    m.push(new Multiplier(80, 0.6));
+    m.push(new Multiplier(135, 0.35));
+    m.push(new Multiplier(180, 0.3));
     m.push(new Multiplier(240, 0.5));
     m.push(new Multiplier(300, 0.75));
     m.push(new Multiplier(360, 0.9));
@@ -122,7 +208,6 @@ function buildWindDirMultiplierArray() {
 
     for (let i = 0; i < multipliers.length; i++) {
         if (multipliers[i + 1] == undefined) break;
-        
         let start = multipliers[i].fromDirection;
         let end = multipliers[i + 1].fromDirection;
         for (let j = start; j <= end; j++) {
@@ -131,7 +216,6 @@ function buildWindDirMultiplierArray() {
         }
     }
 
-    console.log(array);
     let chart = document.getElementById("chart");
     for (let i = 0; i < array.length; i += 1) {
         let div = document.createElement("div");
@@ -148,13 +232,13 @@ function linearInterpolation(a, b, t) {
     return a + (b - a) * t;
 }
 
-function getTableHeader(){
+function getTableHeader() {
     let header = document.createElement("thead");
     header.innerHTML = `<thead>
                             <tr>
                                 <th>Time</th>
-                                <th>Temperatur</th>
-                                <th>Vind</th>
+                                <th>Temperatur &degC</th>
+                                <th>Vind m/s</th>
                                 <th>Score</th>
                             </tr>
                         </thead>`
@@ -178,4 +262,26 @@ function getDay(number) {
         case 6:
             return "Lørdag";
     }
+}
+
+function getTimezoneOffset(timeZone, date = new Date()) {
+    // let dateString = date.toString().split(" ")[5];
+    let dateString = date.toLocaleTimeString("en-US", { hour12: false, timeZone: timeZone, timeZoneName: "longOffset"});
+    let sign = dateString.slice(12, 13);
+    let hours = dateString.slice(13, 15);
+    let minutes = dateString.slice(16, 18);
+
+
+    // console.log(sign + hours + minutes);
+    return `${sign}${hours}:${minutes}`
+}
+
+function getSUrl() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const monthStr = month.toString().padStart(2, "0");
+    const day = now.getDate();
+    const dayStr = day.toString().padStart(2, "0");
+    return `https://api.met.no/weatherapi/sunrise/2.0/.json?date=${year}-${monthStr}-${dayStr}&days=10&lat=57.0481&lon=9.941&offset=${getTimezoneOffset("Europe/Copenhagen")}`;
 }
