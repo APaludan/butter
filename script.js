@@ -28,11 +28,7 @@ function update() {
         fetch(wUrl).then(response => response.json()),
         fetch(sUrl).then(response => response.json()),
         // fetch(tempUrl1).then(response => response.json())],
-        fetch(tempUrl2, {
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-            }
-        }).then(response => response.json())])
+        fetch(tempUrl2).then(response => response.json())])
         .then(([weatherData, sunData, tempData]) => {
             console.log(tempData);
             let span = document.createElement("span");
