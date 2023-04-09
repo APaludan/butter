@@ -12,7 +12,8 @@ Date.prototype.getDKHours = function () {
 
 const wUrl = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
 const sUrl = getSUrl();
-const tUrl = "https://api.met.no/weatherapi/oceanforecast/2.0/complete?lat=56.988425&lon=10.286659";
+// const tempUrl1 = "https://api.met.no/weatherapi/oceanforecast/2.0/complete?lat=56.988425&lon=10.286659";
+const tempUrl2 = "https://dmigw.govcloud.dk/v1/forecastedr/collections/DKSS_LF/position?coords=POINT(9.941540%2057.049924)&parameter-name=water-temperature&api-key=add15d11-84be-4302-8dc2-407a07d912ba"
 const tableDiv = document.getElementById("tableDiv");
 let windDirMultiplierArray = buildWindDirMultiplierArray();
 
@@ -26,16 +27,18 @@ function update() {
     Promise.all([
         fetch(wUrl).then(response => response.json()),
         fetch(sUrl).then(response => response.json()),
-        fetch(tUrl).then(response => response.json())])
-        .then(([wData, sData, tData]) => {
+        // fetch(tempUrl1).then(response => response.json())],
+        fetch(tempUrl2).then(response => response.json())])
+        .then(([weatherData, sunData, tempData]) => {
+            console.log(tempData);
             let span = document.createElement("span");
             span.className = "waterTemp transition-no-transform";
-            span.textContent = Math.ceil(tData["properties"]["timeseries"][0]["data"]["instant"]["details"]["sea_water_temperature"] - 1.6) + "°"
+            span.textContent = Math.ceil(tempData) + "°"
             document.getElementById("waterTemp").appendChild(span);
 
             let index = 0;
 
-            let timeseries = wData["properties"]["timeseries"];
+            let timeseries = weatherData["properties"]["timeseries"];
             while (new Date(timeseries[index]["time"]).getHours() != new Date().getHours()) {
                 index++;
             }
@@ -80,12 +83,12 @@ function update() {
                 let sunDiv = document.createElement("div");
                 sunDiv.style.display = "flex";
                 sunDiv.style.justifyContent = "space-evenly";
-            
+
                 let sunriseDiv = document.createElement("div");
                 sunriseDiv.style.display = "flex";
                 sunriseDiv.style.alignItems = "center";
                 sunriseDiv.style.marginLeft = "20px";
-            
+
                 {
                     let img = document.createElement("img");
                     img.style.height = "60px";
@@ -95,9 +98,9 @@ function update() {
                 }
                 let sunrise = document.createElement("p");
                 sunrise.style.marginLeft = "10px";
-                sunrise.textContent = new Date(sData.location.time[dIndex].sunrise.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+                sunrise.textContent = new Date(sunData.location.time[dIndex].sunrise.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
                 sunriseDiv.appendChild(sunrise);
-            
+
                 let sunsetDiv = document.createElement("div");
                 sunsetDiv.style.display = "flex";
                 sunsetDiv.style.alignItems = "center";
@@ -111,9 +114,9 @@ function update() {
                 }
                 let sunset = document.createElement("p");
                 sunset.style.marginLeft = "10px";
-                sunset.textContent = new Date(sData.location.time[dIndex].sunset.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+                sunset.textContent = new Date(sunData.location.time[dIndex].sunset.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
                 sunsetDiv.appendChild(sunset);
-            
+
                 sunDiv.appendChild(sunriseDiv);
                 sunDiv.appendChild(sunsetDiv);
                 div.appendChild(sunDiv);
@@ -126,7 +129,7 @@ function update() {
         .catch(error => { console.log(error); alert(error) });
 }
 
-function sunDivs(sData, dIndex){
+function sunDivs(sData, dIndex) {
 
     return sunDiv;
 }
@@ -204,7 +207,7 @@ function scoreColor(score) {
 function getMultipliers() {
     let m = [];
     m.push(
-        new Multiplier(0, 0.9), 
+        new Multiplier(0, 0.9),
         new Multiplier(80, 0.6),
         new Multiplier(135, 0.35),
         new Multiplier(180, 0.3),
