@@ -192,13 +192,15 @@ function scoreColor(score) {
 // must have multiplier at 0 and 360
 function getMultipliers() {
     let m = [];
-    m.push(new Multiplier(0, 0.9));
-    m.push(new Multiplier(80, 0.6));
-    m.push(new Multiplier(135, 0.35));
-    m.push(new Multiplier(180, 0.3));
-    m.push(new Multiplier(240, 0.5));
-    m.push(new Multiplier(300, 0.75));
-    m.push(new Multiplier(360, 0.9));
+    m.push(
+        new Multiplier(0, 0.9), 
+        new Multiplier(80, 0.6),
+        new Multiplier(135, 0.35),
+        new Multiplier(180, 0.3),
+        new Multiplier(240, 0.5),
+        new Multiplier(300, 0.75),
+        new Multiplier(360, 0.9)
+    );
     return m;
 }
 
@@ -266,7 +268,7 @@ function getDay(number) {
 
 function getTimezoneOffset(timeZone, date = new Date()) {
     // let dateString = date.toString().split(" ")[5];
-    let dateString = date.toLocaleTimeString("en-US", { hour12: false, timeZone: timeZone, timeZoneName: "longOffset"});
+    let dateString = date.toLocaleTimeString("en-US", { hour12: false, timeZone: timeZone, timeZoneName: "longOffset" });
     let sign = dateString.slice(12, 13);
     let hours = dateString.slice(13, 15);
     let minutes = dateString.slice(16, 18);
