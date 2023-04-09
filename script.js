@@ -71,45 +71,21 @@ function update() {
                 let tbody = document.createElement("tbody");
 
                 day.forEach(hour => {
-                    let row = document.createElement("tr");
-                    let time = document.createElement("td");
-                    let temp = document.createElement("td");
-                    let wind = document.createElement("td");
-                    let score = document.createElement("td");
-                    score.style.color = scoreColor(hour.wack);
-                    score.style.fontWeight = "bold";
-
-                    time.textContent = hour.hour.toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
-                    temp.textContent = hour.temp.toFixed(0) + "°";
-                    if (temp.textContent === "-0°") temp.textContent = "0°";
-                    wind.textContent = hour.wind.toFixed(1);
-                    {
-                        let img = document.createElement("img");
-                        img.style.transform = "rotate(" + hour.toDirection + "deg)";
-                        img.style.height = "20px";
-                        img.style.marginLeft = "10px";
-                        img.src = "arrow_lowres.png";
-                        wind.appendChild(img);
-                    }
-                    score.textContent = hour.wack;
-
-                    row.appendChild(time);
-                    row.appendChild(temp);
-                    row.appendChild(wind);
-                    row.appendChild(score);
-                    tbody.appendChild(row);
+                    tbody.appendChild(hourRow(hour));
                 });
+
                 table.appendChild(tbody);
                 div.appendChild(table);
 
                 let sunDiv = document.createElement("div");
                 sunDiv.style.display = "flex";
                 sunDiv.style.justifyContent = "space-evenly";
-
+            
                 let sunriseDiv = document.createElement("div");
                 sunriseDiv.style.display = "flex";
                 sunriseDiv.style.alignItems = "center";
                 sunriseDiv.style.marginLeft = "20px";
+            
                 {
                     let img = document.createElement("img");
                     img.style.height = "60px";
@@ -121,7 +97,7 @@ function update() {
                 sunrise.style.marginLeft = "10px";
                 sunrise.textContent = new Date(sData.location.time[dIndex].sunrise.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
                 sunriseDiv.appendChild(sunrise);
-
+            
                 let sunsetDiv = document.createElement("div");
                 sunsetDiv.style.display = "flex";
                 sunsetDiv.style.alignItems = "center";
@@ -137,7 +113,7 @@ function update() {
                 sunset.style.marginLeft = "10px";
                 sunset.textContent = new Date(sData.location.time[dIndex].sunset.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
                 sunsetDiv.appendChild(sunset);
-
+            
                 sunDiv.appendChild(sunriseDiv);
                 sunDiv.appendChild(sunsetDiv);
                 div.appendChild(sunDiv);
@@ -148,6 +124,41 @@ function update() {
             document.getElementById("footer").className = "transition";
         })
         .catch(error => { console.log(error); alert(error) });
+}
+
+function sunDivs(sData, dIndex){
+
+    return sunDiv;
+}
+
+function hourRow(hour) {
+    let row = document.createElement("tr");
+    let time = document.createElement("td");
+    let temp = document.createElement("td");
+    let wind = document.createElement("td");
+    let score = document.createElement("td");
+    score.style.color = scoreColor(hour.wack);
+    score.style.fontWeight = "bold";
+
+    time.textContent = hour.hour.toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+    temp.textContent = hour.temp.toFixed(0) + "°";
+    if (temp.textContent === "-0°") temp.textContent = "0°";
+    wind.textContent = hour.wind.toFixed(1);
+    {
+        let img = document.createElement("img");
+        img.style.transform = "rotate(" + hour.toDirection + "deg)";
+        img.style.height = "20px";
+        img.style.marginLeft = "10px";
+        img.src = "arrow_lowres.png";
+        wind.appendChild(img);
+    }
+    score.textContent = hour.wack;
+
+    row.appendChild(time);
+    row.appendChild(temp);
+    row.appendChild(wind);
+    row.appendChild(score);
+    return row;
 }
 
 function calcWack(wind, direction) {
