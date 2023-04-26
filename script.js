@@ -18,7 +18,11 @@ let windDirMultiplierArray = buildWindDirMultiplierArray();
 
 try {
     update()
-    fetch("https://ahpa.azurewebsites.net/api/counter", { method: "POST" })
+    try {
+        fetch("https://ahpa.azurewebsites.net/api/counter", { method: "POST" })
+    } catch (error) {
+                
+    }
 } catch (error) {
     alert(error);
 }
