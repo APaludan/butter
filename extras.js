@@ -11,7 +11,7 @@ form.addEventListener("submit", function (event) {
     event.preventDefault();
     password = document.getElementById("password").value;
     score = document.getElementById("score").value;
-    fetch("https://ahpa.azurewebsites.net/api/butter/" + password + "/" + score, { method: "POST" })
+    fetch("https://ahpa.azurewebsites.net/api/butter?password=" + password + "&score=" + score, { method: "POST" })
     .then(function (response) {
         res.innerHTML = response.text();
     });
