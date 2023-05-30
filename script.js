@@ -127,10 +127,6 @@ function update() {
         .catch(error => { console.log(error); alert(error) });
 }
 
-function sunDivs(sData, dIndex){
-
-    return sunDiv;
-}
 
 function hourRow(hour) {
     let row = document.createElement("tr");
@@ -162,9 +158,9 @@ function hourRow(hour) {
     return row;
 }
 
-function calcWack(wind, direction) {
-    let wack = wind * windDirMultiplierArray[Math.round(direction)];
-    return Math.round(wack);
+function calcButter(wind, direction) {
+    let score = wind * windDirMultiplierArray[Math.round(direction)];
+    return Math.round(score);
 }
 
 class Hour {
@@ -174,7 +170,7 @@ class Hour {
         this.wind = wind;
         this.fromDirection = direction;
         this.toDirection = (direction + 180) % 360;
-        this.wack = calcWack(wind, direction);
+        this.wack = calcButter(wind, direction);
     }
 }
 
