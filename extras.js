@@ -14,7 +14,7 @@ form.addEventListener("submit", function (event) {
     try {
         fetch("https://ahpa.azurewebsites.net/api/butter?password=" + password + "&score=" + score, { method: "POST" })
         .then(function (response) {
-            res.innerHTML = "status = " + response.statusText;
+            res.innerHTML = "status = " + response.status;
         });
     } catch (error) {
         res.innerHTML = error;
