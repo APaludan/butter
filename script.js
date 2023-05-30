@@ -18,11 +18,7 @@ let windDirMultiplierArray = buildWindDirMultiplierArray();
 
 try {
     update()
-    try {
-        fetch("https://ahpa.azurewebsites.net/api/counter", { method: "POST" })
-    } catch (error) {
-                
-    }
+    fetch("https://ahpa.azurewebsites.net/api/counter", { method: "POST" })
 } catch (error) {
     alert(error);
 }
@@ -44,6 +40,7 @@ function update() {
             while (new Date(timeseries[index]["time"]).getHours() != new Date().getHours()) {
                 index++;
             }
+            console.log("index: " + index)
 
             let forecast = [];
             let day = [];
