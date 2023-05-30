@@ -40,7 +40,6 @@ function update() {
             while (new Date(timeseries[index]["time"]).getHours() != new Date().getHours()) {
                 index++;
             }
-            console.log("index: " + index)
 
             let forecast = [];
             let day = [];
