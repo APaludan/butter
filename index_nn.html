@@ -9,6 +9,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"> </script>
 </head>
 
 <body>
@@ -26,6 +27,7 @@
                 <h1>🧈🧈</h1>
             </div>
         </div>
+        <h3>AI version (test)</h3>
         <h2 id="toggle">Aalborg Cable Park</h2>
         <div id="chartDiv" class="hidden">
             <h3>windFromDirMultiplier (debug)</h3>
@@ -48,7 +50,7 @@
         <div style="margin-top: 20px; margin-bottom: 20px; opacity: 0;" id="footer">
             <a href="data.html">Send score</a>
             <br/>
-            <a href="index_nn.html">AI version (test)</a>
+            <a href="index.html">Standard version</a>
             <p id="disclamer"><span class="asterisk">*</span>cirka idk ¯\_(ツ)_/¯</p>
             <p>Data from The Norwegian Meteorological Institute.</p>
             <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
@@ -62,7 +64,7 @@
             </p>
         </div>
     </div>
-    <script src="script.js"></script>
+    <script src="script_nn.js"></script>
     <script src="extras.js"></script>
 </body>
 

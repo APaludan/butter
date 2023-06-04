@@ -7,16 +7,18 @@ if (debug == 'true') {
 
 const form = document.getElementById("form");
 const res = document.getElementById("res");
-form.addEventListener("submit", function (event) {
-    event.preventDefault();
-    password = document.getElementById("password").value;
-    score = document.getElementById("score").value;
-    try {
-        fetch("https://ahpa.azurewebsites.net/api/butter?password=" + password + "&score=" + score, { method: "POST" })
-        .then(function (response) {
-            res.innerHTML = "status = " + response.status;
-        });
-    } catch (error) {
-        res.innerHTML = error;
-    }
-});
+if (form != null) {
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        password = document.getElementById("password").value;
+        score = document.getElementById("score").value;
+        try {
+            fetch("https://ahpa.azurewebsites.net/api/butter?password=" + password + "&score=" + score, { method: "POST" })
+            .then(function (response) {
+                res.innerHTML = "status = " + response.status;
+            });
+        } catch (error) {
+            res.innerHTML = error;
+        }
+    });
+}
