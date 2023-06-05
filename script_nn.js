@@ -1,13 +1,6 @@
 tf.setBackend('cpu');
 let model = null;
 
-class Multiplier {
-    constructor(fromDirection, value) {
-        this.fromDirection = fromDirection;
-        this.value = value;
-    }
-}
-
 Date.prototype.getDKHours = function () {
     return parseInt(this.toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen", hour: "2-digit", hour12: false }).split(".")[0]);
 }
@@ -17,7 +10,6 @@ const wUrl = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57
 const sUrl = getSUrl();
 const tUrl = "https://api.met.no/weatherapi/oceanforecast/2.0/complete?lat=56.988425&lon=10.286659";
 const tableDiv = document.getElementById("tableDiv");
-let windDirMultiplierArray = buildWindDirMultiplierArray();
 
 try {
     update()
@@ -27,12 +19,16 @@ try {
 }
 
 async function update() {
-    model = await tf.loadLayersModel('tf_model/model.json');
     Promise.all([
+        await tf.loadLayersModel('tf_model/model.json'),
         fetch(wUrl).then(response => response.json()),
         fetch(sUrl).then(response => response.json()),
         fetch(tUrl).then(response => response.json())])
-        .then(([wData, sData, tData]) => {
+        .then(([loadedModel, wData, sData, tData]) => {
+            // load model
+            model = loadedModel;
+
+            // set water temp
             let span = document.createElement("span");
             span.className = "waterTemp transition-no-transform";
             span.textContent = Math.round(tData["properties"]["timeseries"][0]["data"]["instant"]["details"]["sea_water_temperature"]) + "°"
@@ -169,11 +165,6 @@ function hourRow(hour) {
     return row;
 }
 
-function calcButter(wind, direction) {
-    let score = wind * windDirMultiplierArray[Math.round(direction)];
-    return Math.round(score);
-}
-
 class Hour {
     constructor(hour, temp, wind, direction) {
         this.hour = hour
@@ -208,51 +199,6 @@ function scoreColor(score) {
         default:
             return "#ce1f1f";
     }
-}
-
-// must have multiplier at 0 and 360
-function getMultipliers() {
-    let m = [];
-    m.push(
-        new Multiplier(0, 0.9),
-        new Multiplier(80, 0.6),
-        new Multiplier(135, 0.35),
-        new Multiplier(180, 0.3),
-        new Multiplier(240, 0.5),
-        new Multiplier(300, 0.75),
-        new Multiplier(360, 0.9)
-    );
-    return m;
-}
-
-function buildWindDirMultiplierArray() {
-    let array = [];
-    let multipliers = getMultipliers();
-
-    for (let i = 0; i < multipliers.length; i++) {
-        if (multipliers[i + 1] == undefined) break;
-        let start = multipliers[i].fromDirection;
-        let end = multipliers[i + 1].fromDirection;
-        for (let j = start; j <= end; j++) {
-            let distance = end - start;
-            array[j] = linearInterpolation(multipliers[i].value, multipliers[i + 1].value, (j - start) / distance);
-        }
-    }
-
-    let chart = document.getElementById("chart");
-    for (let i = 0; i < array.length; i += 1) {
-        let div = document.createElement("div");
-        div.style.height = array[i] * 100 + "px";
-        div.style.backgroundColor = scoreColor(Math.round(array[i] * 8));
-        div.style.flexGrow = "1";
-        chart.appendChild(div);
-    };
-    return array;
-}
-
-
-function linearInterpolation(a, b, t) {
-    return a + (b - a) * t;
 }
 
 function getTableHeader() {
