@@ -171,3 +171,20 @@ button {
     cursor: pointer;
     width: 100%;
 }
+
+.sunrise-div {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+}
+
+.sunset-div {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+}
+
+.sun-img {
+    height: 60px;
+    margin: -5px;
+}
