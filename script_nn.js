@@ -141,7 +141,7 @@ function hourRow(hour) {
     let temp = document.createElement("td");
     let wind = document.createElement("td");
     let score = document.createElement("td");
-    score.style.color = scoreColor(hour.wack);
+    score.style.color = scoreColor(hour.score);
     score.style.fontWeight = "bold";
 
     time.textContent = hour.hour.toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
@@ -156,7 +156,7 @@ function hourRow(hour) {
         img.src = "arrow_lowres.png";
         wind.appendChild(img);
     }
-    score.textContent = hour.wack;
+    score.textContent = hour.score;
 
     row.appendChild(time);
     row.appendChild(temp);
@@ -174,7 +174,7 @@ class Hour {
         this.toDirection = (direction + 180) % 360;
         const res = model.predict(tf.tensor([[hour.getDKHours(), temp, wind, direction]])).dataSync();
         if (res < 0) res = 0;
-        this.wack = Math.round(res);
+        this.score = Math.round(res);
     }
 }
 

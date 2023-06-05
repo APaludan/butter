@@ -134,7 +134,7 @@ function hourRow(hour) {
     let temp = document.createElement("td");
     let wind = document.createElement("td");
     let score = document.createElement("td");
-    score.style.color = scoreColor(hour.wack);
+    score.style.color = scoreColor(hour.score);
     score.style.fontWeight = "bold";
 
     time.textContent = hour.hour.toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
@@ -149,7 +149,7 @@ function hourRow(hour) {
         img.src = "arrow_lowres.png";
         wind.appendChild(img);
     }
-    score.textContent = hour.wack;
+    score.textContent = hour.score;
 
     row.appendChild(time);
     row.appendChild(temp);
@@ -170,7 +170,7 @@ class Hour {
         this.wind = wind;
         this.fromDirection = direction;
         this.toDirection = (direction + 180) % 360;
-        this.wack = calcButter(wind, direction);
+        this.score = calcButter(wind, direction);
     }
 }
 
