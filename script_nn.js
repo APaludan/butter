@@ -31,7 +31,7 @@ async function update() {
     let wData, sData, tData;
     if (useNN) {
         [model, wData, sData, tData] = await Promise.all([
-            tf.loadLayersModel('tf_model/model.json'),
+            tf.loadLayersModel('nn/tfjs_model/model.json'),
             fetch(wUrl).then(response => response.json()),
             fetch(sUrl).then(response => response.json()),
             fetch(tUrl).then(response => response.json())]);
