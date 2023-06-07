@@ -7,18 +7,21 @@ if (debug == 'true') {
 
 const form = document.getElementById("form");
 const res = document.getElementById("res");
+const submitButton = document.getElementById("submitButton")
 if (form != null) {
     form.addEventListener("submit", function (event) {
         event.preventDefault();
+        submitButton.setAttribute("disabled", "");
         password = document.getElementById("password").value;
         score = document.getElementById("score").value;
-        try {
-            fetch("https://ahpa.azurewebsites.net/api/butter?password=" + password + "&score=" + score, { method: "POST" })
+        fetch("https://ahpa.azurewebsites.net/api/butter?password=" + password + "&score=" + score, { method: "POST" })
             .then(function (response) {
                 res.innerHTML = "status = " + response.status;
-            });
-        } catch (error) {
+                submitButton.removeAttribute("disabled");
+            })
+            .catch (error => {
             res.innerHTML = error;
-        }
+            submitButton.removeAttribute("disabled");
+        });
     });
 }

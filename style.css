@@ -171,6 +171,9 @@ button {
     cursor: pointer;
     width: 100%;
 }
+    button:disabled {
+        background-color: #ccc;
+    }
 
 .sunrise-div {
     display: flex;
