@@ -17,11 +17,9 @@ if (form != null) {
         fetch("https://ahpa.azurewebsites.net/api/butter?password=" + password + "&score=" + score, { method: "POST" })
             .then(function (response) {
                 res.innerHTML = "status = " + response.status;
-                submitButton.removeAttribute("disabled");
             })
-            .catch (error => {
-            res.innerHTML = error;
-            submitButton.removeAttribute("disabled");
-        });
+            .catch(error => {
+                res.innerHTML = error;
+            }).finally(() => submitButton.removeAttribute("disabled"));
     });
 }
