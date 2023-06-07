@@ -193,7 +193,7 @@ function calcButter(hour, temp, wind, direction) {
 
 function calcButterNN(hour, temp, wind, direction) {
     const inputTensor = tf.tensor([[hour.getDKHours(), temp, wind, direction]])
-    const res = model.predict(inputTensor).dataSync();
+    let res = model.predict(inputTensor).dataSync();
     if (res < 0) res = 0;
     return Math.round(res);
 }
