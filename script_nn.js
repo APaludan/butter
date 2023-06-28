@@ -156,7 +156,7 @@ async function update() {
 function print360() {
     for(let i = 0; i < 360; i++) {
         let wx, wy = toWxWy(10, i);
-        run_data = tf.tensor([[12, 10, wx, wy]]);
+        inputTensor = tf.tensor([[12, 10, wx, wy]]);
         res = model.predict(inputTensor).dataSync();
         print(i, Math.round(res));
     }
