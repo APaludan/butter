@@ -11,9 +11,9 @@ EPOCHS = 750
 LR = 1e-3
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Dense(5),
-    tf.keras.layers.Dense(32, activation="relu"),
-    tf.keras.layers.Dense(2)
+    tf.keras.layers.Dense(units = 5),
+    tf.keras.layers.Dense(units = 32, activation="relu"),
+    tf.keras.layers.Dense(units = 1),
 ])
 
 model.compile(loss=tf.keras.losses.MeanAbsoluteError(),
