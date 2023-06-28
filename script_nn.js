@@ -79,6 +79,15 @@ async function update() {
         totalTime += t1 - t0;
     }
 
+    // for each hour in every day, print hour, temperature, wind speed and wind direction as a csv
+    let csv = "";
+    forecast.forEach(day => {
+        day.forEach(hour => {
+            csv += hour.hour.getDKHours() + ", " + hour.temp + ", " + hour.wind + ", " + hour.fromDirection + ", " + hour.score + "\n";
+        });
+    });
+    console.log(csv);
+
     console.log("Total " + (useNN ? "inference time " : "calc time ") + totalTime + " milliseconds.");
 
     forecast.forEach((day, dIndex) => {
@@ -141,6 +150,16 @@ async function update() {
         tableDiv.appendChild(div);
     });
     document.getElementById("footer").className = "transition";
+    if (useNN) print360();
+}
+
+function print360() {
+    for(let i = 0; i < 360; i++) {
+        let wx, wy = toWxWy(10, i);
+        run_data = tf.tensor([[12, 10, wx, wy]]);
+        res = model.predict(inputTensor).dataSync();
+        print(i, Math.round(res));
+    }
 }
 
 
@@ -185,6 +204,16 @@ class ForecastHour {
     }
 }
 
+
+function toWxWy(wind, direction) {
+    // Convert to rad
+    let wd_rad = direction * Math.PI / 180;
+    // Calculate the wind x and y components
+    let wx = wind * Math.cos(wd_rad);
+    let wy = wind * Math.sin(wd_rad);
+    return wx, wy;
+}
+
 function calcButter(hour, temp, wind, direction) {
     if (useNN) return calcButterNN(hour, temp, wind, direction);
     let score = wind * windDirMultiplierArray[Math.round(direction)];
@@ -192,7 +221,8 @@ function calcButter(hour, temp, wind, direction) {
 }
 
 function calcButterNN(hour, temp, wind, direction) {
-    const inputTensor = tf.tensor([[hour.getDKHours(), temp, wind, direction]])
+    let wx, wy = toWxWy(wind, direction);
+    const inputTensor = tf.tensor([[hour.getDKHours(), temp, wx, wy]])
     let res = model.predict(inputTensor).dataSync();
     if (res < 0) res = 0;
     return Math.round(res);
