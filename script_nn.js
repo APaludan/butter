@@ -158,7 +158,7 @@ function print360() {
         let wx, wy = toWxWy(10, i);
         let inputTensor = tf.tensor([[12, 10, wx, wy]]);
         let res = model.predict(inputTensor).dataSync();
-        print(i, Math.round(res));
+        console.log(i, Math.round(res));
     }
 }
 
