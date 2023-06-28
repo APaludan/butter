@@ -150,15 +150,13 @@ async function update() {
         tableDiv.appendChild(div);
     });
     document.getElementById("footer").className = "transition";
-    if (useNN) print360();
 }
 
 function print360() {
     for(let i = 0; i < 360; i++) {
-        let wx, wy = toWxWy(10, i);
-        let inputTensor = tf.tensor([[12, 10, wx, wy]]);
-        let res = model.predict(inputTensor).dataSync();
-        console.log(i, Math.round(res));
+        let nnres = calcButterNN(new Date(), 10, 10, i);
+        let normalres = calcButterNoNN(new Date(), 10, 10, i);
+        console.log(i, "nn:", nnres, "normal:", normalres);
     }
 }
 
@@ -211,7 +209,7 @@ function toWxWy(wind, direction) {
     // Calculate the wind x and y components
     let wx = wind * Math.cos(wd_rad);
     let wy = wind * Math.sin(wd_rad);
-    return wx, wy;
+    return [wx, wy];
 }
 
 function calcButter(hour, temp, wind, direction) {
@@ -220,10 +218,15 @@ function calcButter(hour, temp, wind, direction) {
     return Math.round(score);
 }
 
+function calcButterNoNN(hour, temp, wind, direction) {
+    let score = wind * windDirMultiplierArray[Math.round(direction)];
+    return Math.round(score);
+}
+
 function calcButterNN(hour, temp, wind, direction) {
-    let wx, wy = toWxWy(wind, direction);
+    const [wx, wy] = toWxWy(wind, direction);
     const inputTensor = tf.tensor([[hour.getDKHours(), temp, wx, wy]])
-    let res = model.predict(inputTensor).dataSync();
+    const res = model.predict(inputTensor).dataSync();
     if (res < 0) res = 0;
     return Math.round(res);
 }
