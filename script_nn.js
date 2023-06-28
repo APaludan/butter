@@ -150,6 +150,7 @@ async function update() {
         tableDiv.appendChild(div);
     });
     document.getElementById("footer").className = "transition";
+    print360();
 }
 
 function print360() {
@@ -212,6 +213,10 @@ function toWxWy(wind, direction) {
     return [wx, wy];
 }
 
+function to_sinT_cosT(hour) {
+    return [Math.sin(2 * Math.PI * hour / 24), Math.cos(2 * Math.PI * hour / 24)]
+}
+
 function calcButter(hour, temp, wind, direction) {
     if (useNN) return calcButterNN(hour, temp, wind, direction);
     let score = wind * windDirMultiplierArray[Math.round(direction)];
@@ -225,7 +230,8 @@ function calcButterNoNN(hour, temp, wind, direction) {
 
 function calcButterNN(hour, temp, wind, direction) {
     const [wx, wy] = toWxWy(wind, direction);
-    const inputTensor = tf.tensor([[hour.getDKHours(), temp, wx, wy]])
+    const [sinT, cosT] = to_sinT_cosT(hour.getDKHours());
+    const inputTensor = tf.tensor([[temp, sinT, cosT, wx, wy]])
     const res = model.predict(inputTensor).dataSync();
     if (res < 0) res = 0;
     return Math.round(res);
