@@ -10,14 +10,15 @@ BATCH_SIZE = 50
 EPOCHS = 750
 LR = 1e-3
 
+# model input: temp / 35, sinT, cosT, wx, wy
 model = tf.keras.Sequential([
     tf.keras.layers.Dense(units = 5),
-    tf.keras.layers.Dense(units = 32, activation="relu"),
+    tf.keras.layers.Dense(units = 64, activation="relu"),
     tf.keras.layers.Dense(units = 1),
 ])
 
 model.compile(loss=tf.keras.losses.MeanAbsoluteError(),
-              optimizer=tf.keras.optimizers.experimental.AdamW(learning_rate=LR))
+              optimizer=tf.keras.optimizers.Adamax(learning_rate=LR))
 
 # model.build(input_shape=(None, 5))
 # model.load_weights("nn/model.h5")
@@ -29,7 +30,7 @@ model.fit(training_data,
           shuffle=True,
           validation_data=(validation_data, validation_labels),
           validation_batch_size=BATCH_SIZE,
-          validation_freq=2)
+          validation_freq=5)
 
 # ToDo: add test data
 # print("eval:")
@@ -43,15 +44,13 @@ tfjs.converters.save_keras_model(model, "nn/tfjs_model")
 data = np.array([[12, 18, 6.7, 274]]) # score 4
 wx, wy = to_wx_wy(data[0][2], data[0][3])
 sint, cost = to_sint_cost(12)
-
-run_data = np.array([[18.3, sint, cost, wx, wy]])
-
+run_data = np.array([[18.3 / 35, sint, cost, wx, wy]])
 res = model(run_data)
 print("res: ", res)
 
 for i in range(360):
     wx, wy = to_wx_wy(10, i)
     sint, cost = to_sint_cost(12)
-    run_data = np.array([[10, sint, cost, wx, wy]])
+    run_data = np.array([[10/35, sint, cost, wx, wy]])
     res = model(run_data)
     print(i, res.numpy()[0][0])

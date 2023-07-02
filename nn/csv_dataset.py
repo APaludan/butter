@@ -22,6 +22,8 @@ def get_data(is_train: bool):
     dataset['wx'] = wv * np.cos(wd_rad)
     dataset['wy'] = wv * np.sin(wd_rad)
 
+    dataset["Temperature"] = dataset["Temperature"] / 35
+
     return np.array(dataset), np.array(labels)
 
 def to_wx_wy(windspeed, windDirection):

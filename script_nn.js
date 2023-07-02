@@ -1,4 +1,4 @@
-const useNN = window.location.href.endsWith("_nn.html");
+const useNN = window.location.href.includes("_nn.html");
 let model;
 
 class Multiplier {
@@ -64,7 +64,7 @@ async function update() {
     let day = [];
     for (let i = index; i < timeseries.length; i++) {
         let hour = new Date(timeseries[i]["time"]);
-        if (hour.getDKHours() < 6) continue;
+        if (hour.getDKHours() < 6 || hour.getDKHours() > 22) continue;
         let details = timeseries[i].data.instant.details;
         let temp = details.air_temperature;
         let wind = details.wind_speed;
@@ -78,15 +78,6 @@ async function update() {
         const t1 = performance.now();
         totalTime += t1 - t0;
     }
-
-    // for each hour in every day, print hour, temperature, wind speed and wind direction as a csv
-    let csv = "";
-    forecast.forEach(day => {
-        day.forEach(hour => {
-            csv += hour.hour.getDKHours() + ", " + hour.temp + ", " + hour.wind + ", " + hour.fromDirection + ", " + hour.score + "\n";
-        });
-    });
-    console.log(csv);
 
     console.log("Total " + (useNN ? "inference time " : "calc time ") + totalTime + " milliseconds.");
 
@@ -150,7 +141,18 @@ async function update() {
         tableDiv.appendChild(div);
     });
     document.getElementById("footer").className = "transition";
-    print360();
+
+    if (debug) {
+        // for each hour in every day, print hour, temperature, wind speed and wind direction as a csv
+        let csv = "";
+        forecast.forEach(day => {
+            day.forEach(hour => {
+                csv += hour.hour.getDKHours() + ", " + hour.temp + ", " + hour.wind + ", " + hour.fromDirection + ", " + hour.score + "\n";
+            });
+        });
+        console.log(csv);
+        if (useNN) print360();
+    }
 }
 
 function print360() {
@@ -231,8 +233,8 @@ function calcButterNoNN(hour, temp, wind, direction) {
 function calcButterNN(hour, temp, wind, direction) {
     const [wx, wy] = toWxWy(wind, direction);
     const [sinT, cosT] = to_sinT_cosT(hour.getDKHours());
-    const inputTensor = tf.tensor([[temp, sinT, cosT, wx, wy]])
-    const res = model.predict(inputTensor).dataSync();
+    const inputTensor = tf.tensor([[temp / 35, sinT, cosT, wx, wy]])
+    let res = model.predict(inputTensor).dataSync();
     if (res < 0) res = 0;
     return Math.round(res);
 }
