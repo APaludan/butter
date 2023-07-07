@@ -7,8 +7,8 @@ training_data, training_labels = get_data(is_train=True)
 validation_data, validation_labels = get_data(is_train=False)
 
 BATCH_SIZE = 50
-EPOCHS = 100
-LR = 1e-3
+EPOCHS = 500
+LR = 1e-4
 
 # model input: temp / 35, sinT, cosT, wx, wy
 model = tf.keras.Sequential([
