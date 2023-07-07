@@ -7,13 +7,13 @@ training_data, training_labels = get_data(is_train=True)
 validation_data, validation_labels = get_data(is_train=False)
 
 BATCH_SIZE = 50
-EPOCHS = 750
+EPOCHS = 100
 LR = 1e-3
 
 # model input: temp / 35, sinT, cosT, wx, wy
 model = tf.keras.Sequential([
-    tf.keras.layers.Dense(units = 5),
-    tf.keras.layers.Dense(units = 64, activation="relu"),
+    tf.keras.layers.Dense(units = 15, input_dim=5),
+    tf.keras.layers.Dense(units = 64, activation=tf.nn.relu6),
     tf.keras.layers.Dense(units = 1),
 ])
 
