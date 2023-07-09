@@ -19,7 +19,6 @@ const tUrl = "https://api.met.no/weatherapi/oceanforecast/2.0/complete?lat=56.98
 const tableDiv = document.getElementById("tableDiv");
 const windDirMultiplierArray = buildWindDirMultiplierArray();
 
-
 try {
     update()
     fetch("https://ahpa.azurewebsites.net/api/counter", { method: "POST" })
@@ -45,25 +44,23 @@ async function update() {
             fetch(tUrl).then(response => response.json())]);
     }
 
-    // set water temp
-    let span = document.createElement("span");
-    span.className = "waterTemp transition-no-transform";
-    span.textContent = Math.round(tData.properties.timeseries[0].data.instant.details.sea_water_temperature) + "°"
-    document.getElementById("waterTemp").appendChild(span);
+    setWaterTemp(tData);
 
     let index = 0;
 
+    // Skip old data
     let timeseries = wData.properties.timeseries;
-    while (new Date(timeseries[index]["time"]).getHours() != new Date().getHours()) {
+    while (new Date(timeseries[index].time).getHours() != new Date().getHours()) {
         index++;
     }
 
-    let totalTime = 0;
+    let totalTime = 0; // used to test nn performance
 
+    // build forecast
     let forecast = [];
     let day = [];
     for (let i = index; i < timeseries.length; i++) {
-        let hour = new Date(timeseries[i]["time"]);
+        let hour = new Date(timeseries[i].time);
         if (hour.getDKHours() < 6 || hour.getDKHours() > 22) continue;
         let details = timeseries[i].data.instant.details;
         let temp = details.air_temperature;
@@ -79,8 +76,9 @@ async function update() {
         totalTime += t1 - t0;
     }
 
-    console.log("Total " + (useNN ? "inference time " : "calc time ") + totalTime + " milliseconds.");
+    console.log(`Total ${useNN ? "inference time" : "calc time"}: ${totalTime} milliseconds.`);
 
+    // build html
     forecast.forEach((day, dIndex) => {
         let div = document.createElement("div");
         let date = document.createElement("h4");
@@ -102,67 +100,72 @@ async function update() {
         table.appendChild(tbody);
         div.appendChild(table);
 
-        let sunDiv = document.createElement("div");
-        sunDiv.style.display = "flex";
-        sunDiv.style.justifyContent = "space-evenly";
-
-        let sunriseDiv = document.createElement("div");
-        sunriseDiv.className = "sunrise-div"
-
-        {
-            let img = document.createElement("img");
-            img.className = "sun-img"
-            img.src = "sunrise.svg";
-            sunriseDiv.appendChild(img);
-        }
-        let sunrise = document.createElement("p");
-        sunrise.style.marginLeft = "10px";
-        sunrise.textContent = new Date(sData.location.time[dIndex].sunrise.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
-        sunriseDiv.appendChild(sunrise);
-
-        let sunsetDiv = document.createElement("div");
-        sunsetDiv.className = "sunset-div"
-        {
-            let img = document.createElement("img");
-            img.className = "sun-img"
-            img.src = "sunset.svg";
-            sunsetDiv.appendChild(img);
-        }
-        let sunset = document.createElement("p");
-        sunset.style.marginLeft = "10px";
-        sunset.textContent = new Date(sData.location.time[dIndex].sunset.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
-        sunsetDiv.appendChild(sunset);
-
-        sunDiv.appendChild(sunriseDiv);
-        sunDiv.appendChild(sunsetDiv);
-        div.appendChild(sunDiv);
+        
+        div.appendChild(sunDiv(sData, dIndex));
         div.className = "transition";
-
+        
         tableDiv.appendChild(div);
     });
     document.getElementById("footer").className = "transition";
+    
+    if (debug) printCsv(forecast);
+    
+}
 
-    if (debug) {
-        // for each hour in every day, print hour, temperature, wind speed and wind direction as a csv
-        let csv = "";
-        forecast.forEach(day => {
-            day.forEach(hour => {
-                csv += hour.hour.getDKHours() + ", " + hour.temp + ", " + hour.wind + ", " + hour.fromDirection + ", " + hour.score + "\n";
-            });
+function sunDiv(sunData, dIndex) {
+    let sunDiv = document.createElement("div");
+    sunDiv.style.display = "flex";
+    sunDiv.style.justifyContent = "space-evenly";
+
+    let sunriseDiv = document.createElement("div");
+    sunriseDiv.className = "sunrise-div"
+
+    {
+        let img = document.createElement("img");
+        img.className = "sun-img"
+        img.src = "sunrise.svg";
+        sunriseDiv.appendChild(img);
+    }
+    let sunrise = document.createElement("p");
+    sunrise.style.marginLeft = "10px";
+    sunrise.textContent = new Date(sunData.location.time[dIndex].sunrise.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+    sunriseDiv.appendChild(sunrise);
+
+    let sunsetDiv = document.createElement("div");
+    sunsetDiv.className = "sunset-div"
+    {
+        let img = document.createElement("img");
+        img.className = "sun-img"
+        img.src = "sunset.svg";
+        sunsetDiv.appendChild(img);
+    }
+    let sunset = document.createElement("p");
+    sunset.style.marginLeft = "10px";
+    sunset.textContent = new Date(sunData.location.time[dIndex].sunset.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+    sunsetDiv.appendChild(sunset);
+
+    sunDiv.appendChild(sunriseDiv);
+    sunDiv.appendChild(sunsetDiv);
+    return sunDiv;
+}
+
+// print calculated data to console as csv to be used as temp data for nn
+function printCsv(forecast) {
+    let csv = "";
+    forecast.forEach(day => {
+        day.forEach(hour => {
+            csv += `${hour.hour.getDKHours()}, ${hour.temp}, ${hour.wind}, ${hour.fromDirection}, ${hour.score}\n`;
         });
-        console.log(csv);
-        if (useNN) print360();
-    }
+    });
+    console.log(csv);
 }
 
-function print360() {
-    for(let i = 0; i < 360; i++) {
-        let nnres = calcButterNN(new Date(), 10, 10, i);
-        let normalres = calcButterNoNN(new Date(), 10, 10, i);
-        console.log(i, "nn:", nnres, "normal:", normalres);
-    }
+function setWaterTemp(tData) {
+    let span = document.createElement("span");
+    span.className = "waterTemp transition-no-transform";
+    span.textContent = Math.round(tData.properties.timeseries[0].data.instant.details.sea_water_temperature) + "°"
+    document.getElementById("waterTemp").appendChild(span);
 }
-
 
 function hourRow(hour) {
     let row = document.createElement("tr");
@@ -257,7 +260,7 @@ function buildWindDirMultiplierArray() {
     let multipliers = getMultipliers();
 
     for (let i = 0; i < multipliers.length; i++) {
-        if (multipliers[i + 1] == undefined) break;
+        if (multipliers[i + 1] == undefined) break; // ??? i<multipliers.length-1 ???
         let start = multipliers[i].fromDirection;
         let end = multipliers[i + 1].fromDirection;
         for (let j = start; j <= end; j++) {

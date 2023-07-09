@@ -15,11 +15,8 @@ if (form != null) {
         password = document.getElementById("password").value;
         score = document.getElementById("score").value;
         fetch("https://ahpa.azurewebsites.net/api/butter?password=" + password + "&score=" + score, { method: "POST" })
-            .then(function (response) {
-                res.innerHTML = "status = " + response.status;
-            })
-            .catch(error => {
-                res.innerHTML = error;
-            }).finally(() => submitButton.removeAttribute("disabled"));
+            .then(response => res.innerHTML = "status = " + response.status)
+            .catch(error => res.innerHTML = error)
+            .finally(() => submitButton.removeAttribute("disabled"));
     });
 }
