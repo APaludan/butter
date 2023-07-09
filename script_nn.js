@@ -127,7 +127,6 @@ function sunDiv(sunData, dIndex) {
         sunriseDiv.appendChild(img);
     }
     let sunrise = document.createElement("p");
-    sunrise.style.marginLeft = "10px";
     sunrise.textContent = new Date(sunData.location.time[dIndex].sunrise.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
     sunriseDiv.appendChild(sunrise);
 
@@ -140,7 +139,6 @@ function sunDiv(sunData, dIndex) {
         sunsetDiv.appendChild(img);
     }
     let sunset = document.createElement("p");
-    sunset.style.marginLeft = "10px";
     sunset.textContent = new Date(sunData.location.time[dIndex].sunset.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
     sunsetDiv.appendChild(sunset);
 
