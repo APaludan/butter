@@ -7,7 +7,6 @@ body {
 html,
 body {
     max-width: 100%;
-    overflow-x: hidden;
 }
 
 .container {
@@ -35,25 +34,7 @@ body {
 
 @media (min-width: 700px) {
     .container {
-        width: 75%;
-    }
-}
-
-@media (min-width: 850px) {
-    .container {
-        width: 70%;
-    }
-}
-
-@media (min-width: 1000px) {
-    .container {
-        width: 65%;
-    }
-}
-
-@media (min-width: 1150px) {
-    .container {
-        width: 700px;
+        width: 600px;
     }
 }
 
@@ -78,6 +59,7 @@ td:first-child {
 th:last-child,
 td:last-child {
     padding-right: 0;
+    text-align: right;
 }
 
 tbody tr:hover {
@@ -159,7 +141,7 @@ input {
     margin: 8px 0;
     box-sizing: border-box;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 8px;
 }
 
 button {
@@ -170,9 +152,23 @@ button {
     border: none;
     cursor: pointer;
     width: 100%;
+    border-radius: 8px;
+    transition: all 150ms ease-out;
+    box-shadow: #ccc 0px 0px;
 }
     button:disabled {
         background-color: #ccc;
+        cursor: default;
+    }
+    button:hover {
+        background-color: rgb(45, 150, 255);
+        box-shadow: #ccc 0px 5px;
+        transform: translateY(-5px);
+    }
+    button:active {
+        background-color: rgb(28, 132, 237);
+        box-shadow: #ccc 0px 0px;
+        transform: translateY(0px);
     }
 
 .sunrise-div {

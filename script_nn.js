@@ -311,7 +311,7 @@ function getTableHeader() {
     header.innerHTML = `<thead>
                             <tr>
                                 <th>Time</th>
-                                <th>Temperatur &degC</th>
+                                <th>Temp &degC</th>
                                 <th>Vind m/s</th>
                                 <th>Score</th>
                             </tr>
