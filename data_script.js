@@ -15,13 +15,13 @@ if (form != null) {
                 let message;
                 switch (response.status) {
                     case 200:
-                        message = "Gemt 🧈🧈🌊🌊👌👌"
+                        message = "Gemt! 🧈🧈🌊🌊👌👌"
                         break;
                     default:
                         message = "Et eller andet gik galt🤯. Måske fordi den kun accepterer scores mellem 0 og 15."
                         break;
                 }
-                res.innerHTML = "status = " + response.status
+                res.innerHTML = "status = " + message
             })
             .catch(error => { 
                 res.innerHTML = error;
