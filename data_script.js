@@ -15,7 +15,7 @@ if (form != null) {
                 if (response.status != 200) {
                     throw new Error("Et eller andet gik galt🤯 den kun accepterer scores mellem 0 og 15 btw.");
                 }
-                res.innerHTML = "status = Gemt! 🧈🧈🌊🌊👌👌";
+                res.innerHTML = "Gemt! 🧈🧈🌊🌊👌👌";
             })
             .catch(error => { 
                 res.innerHTML = error;
