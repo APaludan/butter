@@ -13,7 +13,7 @@ if (form != null) {
         fetch(`https://ahpa.azurewebsites.net/api/butter?&score=${score}&password=${password}`, { method: "POST" })
             .then(response => {
                 if (response.status != 200) {
-                    throw new Error("Et eller andet gik galt🤯 den kun accepterer scores mellem 0 og 15 btw.");
+                    throw new Error("Et eller andet gik galt🤯 den accepterer kun scores mellem 0 og 15 btw.");
                 }
                 res.innerHTML = "Gemt! 🧈🧈🌊🌊👌👌";
             })
