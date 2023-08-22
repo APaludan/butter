@@ -1,5 +1,9 @@
-fetch("https://ahpa.azurewebsites.net/api/butter/")
-    .then(res => res.text().then(text => document.getElementById("data").innerHTML = text));
+document.getElementById("get-data").addEventListener("click", event => {
+    event.preventDefault();
+    fetch("https://ahpa.azurewebsites.net/api/butter/")
+        .then(res => res.text().then(text => document.getElementById("data").innerHTML = text));
+});
+
 
 const form = document.getElementById("form");
 const res = document.getElementById("res");
