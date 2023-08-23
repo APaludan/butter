@@ -40,6 +40,6 @@ function setSubmitButton() {
     if (!allowSubmit) {
         submitButton.setAttribute("disabled", "");
         const timeToNextSubmit = (lastSubmit - Date.now() + 3_600_000) / 1000 / 60;
-        res.innerHTML = `Vent ${Math.round(timeToNextSubmit)} minutter før du kan sende butterscore igen.`;
+        submitButton.innerHTML = `Vent ${Math.round(timeToNextSubmit)} minutter før du kan sende butterscore igen.`;
     }
 }
