@@ -143,6 +143,9 @@ input {
     border: 1px solid #ccc;
     border-radius: 8px;
 }
+    input:invalid {
+        border: 1px solid indianred;
+    }
 
 button {
     background-color: dodgerblue;
