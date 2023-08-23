@@ -26,8 +26,8 @@ form.addEventListener("submit", function (event) {
         .catch(error => { 
             res.innerHTML = error;
             submitButton.removeAttribute("disabled");
-        });
-    setSubmitButton();
+        })
+        .finally(() => setSubmitButton());
 });
 
 function setSubmitButton() {
