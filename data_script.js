@@ -16,14 +16,14 @@ form.addEventListener("submit", function (event) {
     password = document.getElementById("password").value;
     score = document.getElementById("score").value;
     fetch(`https://ahpa.azurewebsites.net/api/butter?&score=${score}&password=${password}`, { method: "POST" })
-    .then(response => {
-        if (response.status != 200) {
-            throw new Error("Et eller andet gik galt🤯 den accepterer kun scores mellem 0 og 15 btw.");
-        }
-        res.innerHTML = "Gemt! 🧈🧈🌊🌊👌👌";
-        window.localStorage.setItem("lastSubmit", Date.now().toString());
+        .then(response => {
+            if (response.status != 200) {
+                throw new Error("Et eller andet gik galt🤯 den accepterer kun scores mellem 0 og 15 btw.");
+            }
+            res.innerHTML = "Gemt! 🧈🧈🌊🌊👌👌";
+            window.localStorage.setItem("lastSubmit", Date.now().toString());
         })
-        .catch(error => { 
+        .catch(error => {
             res.innerHTML = error;
             submitButton.removeAttribute("disabled");
         })
@@ -41,5 +41,5 @@ function setSubmitButton() {
         submitButton.setAttribute("disabled", "");
         const timeToNextSubmit = (lastSubmit - Date.now() + 3_600_000) / 1000 / 60;
         res.innerHTML = `Vent ${Math.round(timeToNextSubmit)} minutter før du kan sende butterscore igen.`;
-    } 
+    }
 }
