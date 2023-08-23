@@ -159,6 +159,9 @@ button {
         background-color: #ccc;
         cursor: default;
     }
+    button:disabled:active {
+        background-color: #353535;
+    }
     button:active {
         background-color: rgb(28, 132, 237);
     }
