@@ -43,19 +43,16 @@ function makeNotifications(forecast) {
     let arrayDates = [];
     forecast.forEach( (day) => {
         day.forEach( hour => {
-            if (hour.hour.getDKHours() == 8 || hour.hour.getDKHours() == 14 || hour.hour.getDKHours() == 20) { 
-                return;
-            }
             if (hour.score <= 1) {
                 arrayDates.push(hour.hour)
                 arrayMs.push(hour.hour.getTime() - new Date().getTime())
             }
         })
     })
-    setNotiTimes(arrayMs, arrayDates)
+    sendNotiTimes(arrayMs, arrayDates)
 }
 
-function setNotiTimes(arrayMs, arrayDates) {
+function sendNotiTimes(arrayMs, arrayDates) {
     navigator.serviceWorker.controller.postMessage([arrayMs, arrayDates]);
 }
 
