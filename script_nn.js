@@ -1,5 +1,5 @@
 const enableNotifications = document.getElementById("enableNotifications")
-registerSW();
+// registerSW();
 let swRegistered = false;
 
 enableNotifications.addEventListener("click", () => {
