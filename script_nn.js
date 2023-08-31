@@ -1,3 +1,28 @@
+const enableNotifications = document.getElementById("enableNotifications")
+
+enableNotifications.addEventListener("click", (e) => {
+    navigator.serviceWorker.register("service_worker.js");
+
+    navigator.serviceWorker.addEventListener("message", (e) => {
+        if (Notification.permission === "granted") {
+            navigator.serviceWorker.ready.then((registration) => {
+                registration.showNotification(e.data)
+            });
+        } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then((permission) => {
+                if (permission === "granted") {
+                    navigator.serviceWorker.ready.then((registration) => {
+                        registration.showNotification(e.data)
+                    });
+                }
+            })
+        }
+
+    })
+
+    navigator.serviceWorker.controller.postMessage([10_000, 2000, 20_000]);
+})
+
 const useNN = window.location.href.includes("_nn.html");
 let model;
 

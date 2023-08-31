@@ -10,35 +10,6 @@ const res = document.getElementById("res");
 const submitButton = document.getElementById("submitButton");
 setSubmitButton();
 
-navigator.serviceWorker.register("service_worker.js");
-
-navigator.serviceWorker.addEventListener("message", (e) => {
-    if (Notification.permission === "granted") {
-        navigator.serviceWorker.ready.then((registration) => {
-            registration.showNotification(e.data)
-        });
-    } else if (Notification.permission !== "denied") {
-        Notification.requestPermission().then((permission) => {
-            if (permission === "granted") {
-                navigator.serviceWorker.ready.then((registration) => {
-                    registration.showNotification(e.data)
-                });
-            }
-        })
-    }
-
-})
-
-const registration = navigator.serviceWorker.getRegistration("service_worker.js");
-registration.onmessage = (event) => {
-    registration.showNotification({
-        title: "New Message",
-        body: "You have a new message",
-    });
-};
-
-navigator.serviceWorker.controller.postMessage([10_000, 2000, 20_000]);
-
 form.addEventListener("submit", function (event) {
     event.preventDefault();
     submitButton.setAttribute("disabled", "");
