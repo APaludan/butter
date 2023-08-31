@@ -7,20 +7,30 @@ document.getElementById("get-data").addEventListener("click", event => {
 
 const form = document.getElementById("form");
 const res = document.getElementById("res");
-const submitButton = document.getElementById("submitButton")
+const submitButton = document.getElementById("submitButton");
 setSubmitButton();
 
-async function notificationTest() {
-    Notification.requestPermission().then((result) => {
-        if (result === "granted") {
-            setTimeout(() => {
-                new Notification("Hej hej");
-            }, 6000);
-        }
-    });
-}
+navigator.serviceWorker.register("service_worker.js");
 
-notificationTest()
+navigator.serviceWorker.addEventListener("message", (e) => {
+    if (Notification.permission === "granted") {
+        // Check whether notification permissions have already been granted;
+        // if so, create a notification
+        const notification = new Notification(e.data);
+        // …
+      } else if (Notification.permission !== "denied") {
+        // We need to ask the user for permission
+        Notification.requestPermission().then((permission) => {
+          // If the user accepts, let's create a notification
+          if (permission === "granted") {
+            const notification = new Notification(e.data);
+            // …
+          }
+        })
+    }
+})
+
+navigator.serviceWorker.controller.postMessage([10_000, 2000, 20_000]);
 
 form.addEventListener("submit", function (event) {
     event.preventDefault();
