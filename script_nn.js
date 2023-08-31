@@ -1,9 +1,10 @@
 const enableNotifications = document.getElementById("enableNotifications")
 registerSW();
+let swRegistered = false;
 
-enableNotifications.addEventListener("click", (e) => {
+enableNotifications.addEventListener("click", () => {
+    sendTestNoti();
     registerSW();
-    setNotiTimes([200000])
 })
 
 function registerSW() {
@@ -28,16 +29,35 @@ function registerSW() {
         })
     
     })
+    .then( () => swRegistered = true)
     .catch(e => alert(e));
 }
 
+/**
+ * 
+ * @param {[[ForecastHour]]} forecast
+ */
 function makeNotifications(forecast) {
     registerSW();
-
+    let arrayMs = [];
+    let arrayDates = [];
+    forecast.forEach( (day) => {
+        day.forEach( hour => {
+            if (hour.score <= 1) {
+                arrayDates.push(hour.hour)
+                arrayMs.push(hour.hour.getTime() - new Date().getTime())
+            }
+        })
+    })
+    setNotiTimes(arrayMs, arrayDates)
 }
 
-function setNotiTimes(arrayMs) {
-    navigator.serviceWorker.controller.postMessage(arrayMs);
+function setNotiTimes(arrayMs, arrayDates) {
+    navigator.serviceWorker.controller.postMessage([arrayMs, arrayDates]);
+}
+
+function sendTestNoti() {
+    navigator.serviceWorker.controller.postMessage("test");
 }
 
 
@@ -152,7 +172,10 @@ async function update() {
     document.getElementById("footer").className = "transition";
     
     if (debug) printCsv(forecast);
-    
+    console.log(swRegistered);
+    if (swRegistered) {
+        makeNotifications(forecast);
+    }
 }
 
 function sunDiv(sunData, dIndex) {
