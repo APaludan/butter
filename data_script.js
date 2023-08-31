@@ -10,6 +10,18 @@ const res = document.getElementById("res");
 const submitButton = document.getElementById("submitButton")
 setSubmitButton();
 
+async function notificationTest() {
+    Notification.requestPermission().then((result) => {
+        if (result === "granted") {
+            setTimeout(() => {
+                new Notification("Hej hej");
+            }, 6000);
+        }
+    });
+}
+
+notificationTest()
+
 form.addEventListener("submit", function (event) {
     event.preventDefault();
     submitButton.setAttribute("disabled", "");
