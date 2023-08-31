@@ -3,12 +3,13 @@ registerSW();
 let swRegistered = false;
 
 enableNotifications.addEventListener("click", () => {
-    sendTestNoti();
     registerSW();
+    sendTestNoti();
 })
 
 function registerSW() {
-    navigator.serviceWorker.ready.then(reg => reg.unregister);
+    navigator.serviceWorker.ready.then(reg => reg.unregister).then( () => navigator.serviceWorker.removeEventListener("message", this.receiveServiceWorkerMessage));
+    
     navigator.serviceWorker.register("service_worker.js")
     .then( () => {
         navigator.serviceWorker.addEventListener("message", (e) => {
@@ -38,11 +39,13 @@ function registerSW() {
  * @param {[[ForecastHour]]} forecast
  */
 function makeNotifications(forecast) {
-    registerSW();
     let arrayMs = [];
     let arrayDates = [];
     forecast.forEach( (day) => {
         day.forEach( hour => {
+            if (hour.hour.getDKHours() == 8 || hour.hour.getDKHours() == 14 || hour.hour.getDKHours() == 20) { 
+                return;
+            }
             if (hour.score <= 1) {
                 arrayDates.push(hour.hour)
                 arrayMs.push(hour.hour.getTime() - new Date().getTime())

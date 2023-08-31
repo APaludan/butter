@@ -8,9 +8,7 @@ self.addEventListener('message', function (e) {
     if (typeof (e.data) == "string") {
         self.clients.matchAll()
             .then((clientlist) => {
-                clientlist.forEach((client) => {
-                    client.postMessage(`Notifications enabled`);
-                })
+                clientlist[0].postMessage(`Notifications enabled`);
             });
         return;
     }
@@ -23,9 +21,7 @@ self.addEventListener('message', function (e) {
             self.clients.matchAll()
                 .then((clientlist) => {
                     setTimeout(() => {
-                        clientlist.forEach((client) => {
-                            client.postMessage(`Det bliver butter i dag kl: ${dates[i].getDKHours()}. Kom og shred!!`)
-                        })
+                        clientlist[0].postMessage(`Det bliver butter i dag kl: ${dates[i].getDKHours()}. Kom og shred!!`)
                     }, time - 3_600_000);
                 })
         )
