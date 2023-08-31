@@ -1,8 +1,8 @@
-let times = []
-
+let promise
 
 self.addEventListener('message', function (e) {
-    times = e.data
+    clearTimeout();
+    let times = e.data
     
     let promises = []
     times.forEach( (time) => {
@@ -11,17 +11,24 @@ self.addEventListener('message', function (e) {
             .then((clientlist) => {
                 setTimeout(() => {
                     clientlist.forEach((client) => {
-                        client.postMessage(`hejhej test test. Tid:${time}ms`)
+                        client.postMessage(`Det bliver butter (1) her: ${(new Date(new Date().getTime() + time)).toString()}ms`)
                     })
-                }, time);
+                }, 0);
             })
         )
     })
     
-    let promise  = Promise.all(promises)
+    promise  = Promise.all(promises)
 
     if (event.waitUntil) {
         event.waitUntil(promise);
     }
-    self.fetch("data.html")
+});
+
+self.addEventListener('install', function(event) {
+    event.waitUntil(self.skipWaiting()); // Activate worker immediately
+});
+
+self.addEventListener('activate', function(event) {
+    event.waitUntil(self.clients.claim()); // Become available to all pages
 });
