@@ -14,21 +14,28 @@ navigator.serviceWorker.register("service_worker.js");
 
 navigator.serviceWorker.addEventListener("message", (e) => {
     if (Notification.permission === "granted") {
-        // Check whether notification permissions have already been granted;
-        // if so, create a notification
-        const notification = new Notification(e.data);
-        // …
-      } else if (Notification.permission !== "denied") {
-        // We need to ask the user for permission
+        navigator.serviceWorker.ready.then((registration) => {
+            registration.showNotification(e.data)
+        });
+    } else if (Notification.permission !== "denied") {
         Notification.requestPermission().then((permission) => {
-          // If the user accepts, let's create a notification
-          if (permission === "granted") {
-            const notification = new Notification(e.data);
-            // …
-          }
+            if (permission === "granted") {
+                navigator.serviceWorker.ready.then((registration) => {
+                    registration.showNotification(e.data)
+                });
+            }
         })
     }
+
 })
+
+const registration = navigator.serviceWorker.getRegistration("service_worker.js");
+registration.onmessage = (event) => {
+    registration.showNotification({
+        title: "New Message",
+        body: "You have a new message",
+    });
+};
 
 navigator.serviceWorker.controller.postMessage([10_000, 2000, 20_000]);
 
