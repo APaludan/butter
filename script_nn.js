@@ -114,17 +114,20 @@ async function update() {
 function sunDiv(sunData) {
     let sunDiv = document.createElement("div");
     sunDiv.style.display = "flex";
-    sunDiv.style.justifyContent = "space-evenly";
+    // sunDiv.style.justifyContent = "";
+    sunDiv.style.gap = "75px"
+    sunDiv.className = "transition-no-transform";
 
     let sunriseDiv = document.createElement("div");
     sunriseDiv.className = "sunrise-div"
-
+    
     {
         let img = document.createElement("img");
         img.className = "sun-img"
         img.src = "sunrise.svg";
         sunriseDiv.appendChild(img);
     }
+   
     let sunrise = document.createElement("p");
     sunrise.textContent = new Date(sunData.properties.sunrise.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
     sunriseDiv.appendChild(sunrise);
