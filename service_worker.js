@@ -37,8 +37,8 @@ self.addEventListener('message', function (e) {
 
     promise = Promise.all(promises)
 
-    if (event.waitUntil) {
-        event.waitUntil(promise);
+    if (e.waitUntil) {
+        e.waitUntil(promise);
     }
 });
 
