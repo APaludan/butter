@@ -143,6 +143,7 @@ async function update() {
     }
 
     console.log(`Total ${useNN ? "inference time" : "calc time"}: ${totalTime} milliseconds.`);
+    tableDiv.appendChild(sunDiv(sData));
 
     // build html
     forecast.forEach((day, dIndex) => {
@@ -167,7 +168,6 @@ async function update() {
         div.appendChild(table);
 
         
-        // div.appendChild(sunDiv(sData, dIndex));
         div.className = "transition";
         
         tableDiv.appendChild(div);
@@ -181,7 +181,7 @@ async function update() {
     }
 }
 
-function sunDiv(sunData, dIndex) {
+function sunDiv(sunData) {
     let sunDiv = document.createElement("div");
     sunDiv.style.display = "flex";
     sunDiv.style.justifyContent = "space-evenly";
@@ -196,7 +196,7 @@ function sunDiv(sunData, dIndex) {
         sunriseDiv.appendChild(img);
     }
     let sunrise = document.createElement("p");
-    sunrise.textContent = new Date(sunData.location.time[dIndex].sunrise.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+    sunrise.textContent = new Date(sunData.properties.sunrise.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
     sunriseDiv.appendChild(sunrise);
 
     let sunsetDiv = document.createElement("div");
@@ -208,7 +208,7 @@ function sunDiv(sunData, dIndex) {
         sunsetDiv.appendChild(img);
     }
     let sunset = document.createElement("p");
-    sunset.textContent = new Date(sunData.location.time[dIndex].sunset.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+    sunset.textContent = new Date(sunData.properties.sunset.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
     sunsetDiv.appendChild(sunset);
 
     sunDiv.appendChild(sunriseDiv);
@@ -425,5 +425,5 @@ function getSUrl() {
     const monthStr = month.toString().padStart(2, "0");
     const day = now.getDate();
     const dayStr = day.toString().padStart(2, "0");
-    return `https://api.met.no/weatherapi/sunrise/3.0/sun?date=${year}-${monthStr}-${dayStr}&days=10&lat=57.0481&lon=9.941&offset=${getTimezoneOffset("Europe/Copenhagen")}`;
-}""
+    return `https://api.met.no/weatherapi/sunrise/3.0/sun?&lat=57.0481&lon=9.941&offset=${getTimezoneOffset("Europe/Copenhagen")}`;
+}
