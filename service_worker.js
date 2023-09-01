@@ -8,7 +8,11 @@ self.addEventListener('message', function (e) {
     if (typeof (e.data) == "string") {
         self.clients.matchAll()
             .then((clientlist) => {
-                clientlist[0].postMessage(`Notifications enabled`);
+                const res = {
+                    title: "Notifikationer er slået til",
+                    tag: "NotiEnabled"
+                }
+                clientlist[0].postMessage(res);
             });
         return;
     }
@@ -21,7 +25,11 @@ self.addEventListener('message', function (e) {
             self.clients.matchAll()
                 .then((clientlist) => {
                     setTimeout(() => {
-                        clientlist[0].postMessage(`Det bliver butter i dag kl: ${dates[i].getDKHours()}. Kom og shred!!`)
+                        const res = {
+                            title: `Det bliver butter i dag kl: ${dates[i].getDKHours()}. Kom og shred!!`,
+                            tag: time.toString()
+                        }
+                        clientlist[0].postMessage(res);
                     }, time - 3_600_000);
                 })
         )

@@ -13,15 +13,18 @@ function registerSW() {
     navigator.serviceWorker.register("service_worker.js")
     .then( () => {
         navigator.serviceWorker.addEventListener("message", (e) => {
+            const options = {
+                tag: e.data.tag
+            }
             if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then((registration) => {
-                    registration.showNotification(e.data)
+                    registration.showNotification(e.data.title, options);
                 });
             } else if (Notification.permission !== "denied") {
                 Notification.requestPermission().then((permission) => {
                     if (permission === "granted") {
                         navigator.serviceWorker.ready.then((registration) => {
-                            registration.showNotification(e.data)
+                            registration.showNotification(e.data.title, options);
                         });
                     }
                 })
