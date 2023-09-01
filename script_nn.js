@@ -98,7 +98,7 @@ async function update() {
         [model, wData, sData, tData] = await Promise.all([
             tf.loadLayersModel('nn/tfjs_model/model.json'),
             fetch(wUrl).then(response => response.json()),
-            fetch(sUrl).then(response => response.json()),
+            fetch(sUrl, { mode: "cors"}).then(response => response.json()),
             fetch(tUrl).then(response => response.json())]);
         tf.setBackend('cpu');
         tf.enableProdMode();
@@ -167,7 +167,7 @@ async function update() {
         div.appendChild(table);
 
         
-        div.appendChild(sunDiv(sData, dIndex));
+        // div.appendChild(sunDiv(sData, dIndex));
         div.className = "transition";
         
         tableDiv.appendChild(div);
@@ -414,7 +414,6 @@ function getTimezoneOffset(timeZone, date = new Date()) {
     let hours = dateString.slice(13, 15);
     let minutes = dateString.slice(16, 18);
 
-
     // console.log(sign + hours + minutes);
     return `${sign}${hours}:${minutes}`
 }
@@ -426,5 +425,5 @@ function getSUrl() {
     const monthStr = month.toString().padStart(2, "0");
     const day = now.getDate();
     const dayStr = day.toString().padStart(2, "0");
-    return `https://api.met.no/weatherapi/sunrise/2.0/.json?date=${year}-${monthStr}-${dayStr}&days=10&lat=57.0481&lon=9.941&offset=${getTimezoneOffset("Europe/Copenhagen")}`;
-}
+    return `https://api.met.no/weatherapi/sunrise/3.0/sun?date=${year}-${monthStr}-${dayStr}&days=10&lat=57.0481&lon=9.941&offset=${getTimezoneOffset("Europe/Copenhagen")}`;
+}""
