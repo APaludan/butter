@@ -1,67 +1,3 @@
-const enableNotifications = document.getElementById("enableNotifications")
-registerSW();
-
-enableNotifications.addEventListener("click", () => {
-    registerSW();
-    sendTestNoti();
-})
-
-function registerSW() {
-    navigator.serviceWorker.ready.then(reg => reg.unregister).then( () => navigator.serviceWorker.removeEventListener("message", this.receiveServiceWorkerMessage));
-    
-    navigator.serviceWorker.register("service_worker.js")
-    .then( () => {
-        navigator.serviceWorker.addEventListener("message", (e) => {
-            const options = {
-                tag: e.data.tag
-            }
-            if (Notification.permission === "granted") {
-                navigator.serviceWorker.ready.then((registration) => {
-                    registration.showNotification(e.data.title, options);
-                });
-            } else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then((permission) => {
-                    if (permission === "granted") {
-                        navigator.serviceWorker.ready.then((registration) => {
-                            registration.showNotification(e.data.title, options);
-                        });
-                    }
-                })
-            }
-    
-        })
-    
-    })
-    .catch(e => alert(e));
-}
-
-/**
- * 
- * @param {[[ForecastHour]]} forecast
- */
-function makeNotifications(forecast) {
-    let arrayMs = [];
-    let arrayDates = [];
-    forecast.forEach( (day) => {
-        day.forEach( hour => {
-            if (hour.score <= 5) {
-                arrayDates.push(hour.hour)
-                arrayMs.push(hour.hour.getTime() - new Date().getTime())
-            }
-        })
-    })
-    sendNotiTimes(arrayMs, arrayDates)
-}
-
-function sendNotiTimes(arrayMs, arrayDates) {
-    navigator.serviceWorker.controller.postMessage([arrayMs, arrayDates]);
-}
-
-function sendTestNoti() {
-    navigator.serviceWorker.controller.postMessage("test");
-}
-
-
 const useNN = window.location.href.includes("_nn.html");
 let model;
 
@@ -173,8 +109,6 @@ async function update() {
     document.getElementById("footer").className = "transition";
     
     if (debug) printCsv(forecast);
-
-    makeNotifications(forecast);
 }
 
 function sunDiv(sunData) {
@@ -404,7 +338,6 @@ function getDay(number) {
 }
 
 function getTimezoneOffset(timeZone, date = new Date()) {
-    // let dateString = date.toString().split(" ")[5];
     let dateString = date.toLocaleTimeString("en-US", { hour12: false, timeZone: timeZone, timeZoneName: "longOffset" });
     let sign = dateString.slice(12, 13);
     let hours = dateString.slice(13, 15);
@@ -415,11 +348,11 @@ function getTimezoneOffset(timeZone, date = new Date()) {
 }
 
 function getSUrl() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1;
-    const monthStr = month.toString().padStart(2, "0");
-    const day = now.getDate();
-    const dayStr = day.toString().padStart(2, "0");
+    // const now = new Date();
+    // const year = now.getFullYear();
+    // const month = now.getMonth() + 1;
+    // const monthStr = month.toString().padStart(2, "0");
+    // const day = now.getDate();
+    // const dayStr = day.toString().padStart(2, "0");
     return `https://api.met.no/weatherapi/sunrise/3.0/sun?&lat=57.0481&lon=9.941&offset=${getTimezoneOffset("Europe/Copenhagen")}`;
 }
