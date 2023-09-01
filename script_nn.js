@@ -46,7 +46,7 @@ function makeNotifications(forecast) {
     let arrayDates = [];
     forecast.forEach( (day) => {
         day.forEach( hour => {
-            if (hour.score <= 1) {
+            if (hour.score <= 5) {
                 arrayDates.push(hour.hour)
                 arrayMs.push(hour.hour.getTime() - new Date().getTime())
             }
