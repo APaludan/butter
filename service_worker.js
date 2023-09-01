@@ -30,7 +30,7 @@ self.addEventListener('message', function (e) {
                             tag: time.toString()
                         }
                         clientlist[0].postMessage(res);
-                    }, time - 3_600_000);
+                    }, time - 21_600_000);
                 })
         )
     })
