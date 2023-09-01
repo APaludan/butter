@@ -5,20 +5,22 @@ Date.prototype.getDKHours = function () {
 }
 
 self.addEventListener('message', function (e) {
-    if (typeof (e.data) == "string") {
+    console.log(e)
+    if (typeof (e.data) === "string") {
         self.clients.matchAll()
-            .then((clientlist) => {
-                const res = {
-                    title: "Notifikationer er slået til",
-                    tag: "NotiEnabled"
-                }
-                clientlist[0].postMessage(res);
-            });
+        .then((clientlist) => {
+            const res = {
+                title: "Notifikationer er slået til",
+                tag: "NotiEnabled"
+            }
+            clientlist[0].postMessage(res);
+        });
+        console.log("e.data er string")
         return;
     }
+    console.log("jepep")
     let times = e.data[0]
     let dates = e.data[1]
-
     let promises = []
     times.forEach((time, i) => {
         promises.push(
@@ -30,15 +32,13 @@ self.addEventListener('message', function (e) {
                             tag: time.toString()
                         }
                         clientlist[0].postMessage(res);
-                    }, time - 21_600_000);
+                    }, 120000);
                 })
         )
     })
 
-    promise = Promise.all(promises)
-
     if (e.waitUntil) {
-        e.waitUntil(promise);
+        e.waitUntil(Promise.all(promises));
     }
 });
 

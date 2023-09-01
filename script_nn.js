@@ -1,6 +1,5 @@
 const enableNotifications = document.getElementById("enableNotifications")
-// registerSW();
-let swRegistered = false;
+registerSW();
 
 enableNotifications.addEventListener("click", () => {
     registerSW();
@@ -33,7 +32,6 @@ function registerSW() {
         })
     
     })
-    .then( () => swRegistered = true)
     .catch(e => alert(e));
 }
 
@@ -175,10 +173,8 @@ async function update() {
     document.getElementById("footer").className = "transition";
     
     if (debug) printCsv(forecast);
-    console.log(swRegistered);
-    if (swRegistered) {
-        makeNotifications(forecast);
-    }
+
+    makeNotifications(forecast);
 }
 
 function sunDiv(sunData) {
