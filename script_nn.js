@@ -112,8 +112,11 @@ async function update() {
 
 function setInfo(sunData, waterData) {
     document.getElementById("sunrise").textContent = new Date(sunData.properties.sunrise.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+    document.getElementById("sunrise").classList.add("transition-no-transform");
     document.getElementById("sunset").textContent = new Date(sunData.properties.sunset.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+    document.getElementById("sunset").classList.add("transition-no-transform");
     document.getElementById("watertemp").textContent = Math.round(waterData.properties.timeseries[0].data.instant.details.sea_water_temperature) + "°";
+    document.getElementById("watertemp").classList.add("transition-no-transform");
 }
 
 // print calculated data to console as csv to be used as temp data for nn
