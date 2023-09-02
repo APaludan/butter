@@ -26,7 +26,7 @@
                 <h1>🧈🧈</h1>
             </div>
         </div>
-        <h2 id="toggle">Aalborg Cable Park</h2>
+        <h2 id="toggle" class="center-text"">Aalborg Cable Park</h2>
         <div id="chartDiv" class="hidden">
             <h3>windFromDirMultiplier (debug)</h3>
             <div id="chart" class="chart-div"></div>
@@ -42,15 +42,27 @@
                 <p>N</p>
             </div>
         </div>
-        <p id="waterTemp"><span class="asterisk">*</span>Vandtemperatur </p>
-        <p>Score: 0 er butter🧈, 10 er wack🌊</p>
+        <p class="center-text">Score: 0 er butter🧈, 10 er wack🌊</p>
+        <div class="info">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="sunrise.svg" class="sun-img">
+                <p id="sunrise"></p> 
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="sunset.svg" class="sun-img">
+                <p id="sunset"></p> 
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <img src="wave.svg" class="sun-img">
+                <p id="watertemp"></p> 
+            </div>
+        </div>
         <div id="tableDiv"></div>
         <div style="margin-top: 20px; margin-bottom: 20px; opacity: 0;" id="footer">
             <a href="data.html">Send score</a>
             <br/>
             <a href="index_nn.html">AI version (test)</a>
             <br />
-            <p id="disclamer"><span class="asterisk">*</span>cirka idk ¯\_(ツ)_/¯</p>
             <p class="cc">Data from The Norwegian Meteorological Institute.</p>
             <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
                 <img alt="Creative Commons-lisens" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />

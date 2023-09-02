@@ -44,7 +44,7 @@ async function update() {
             fetch(tUrl).then(response => response.json())]);
     }
 
-    setWaterTemp(tData);
+    setInfo(sData, tData);
 
     let index = 0;
 
@@ -77,7 +77,6 @@ async function update() {
     }
 
     console.log(`Total ${useNN ? "inference time" : "calc time"}: ${totalTime} milliseconds.`);
-    tableDiv.appendChild(sunDiv(sData));
 
     // build html
     forecast.forEach((day, dIndex) => {
@@ -111,42 +110,10 @@ async function update() {
     if (debug) printCsv(forecast);
 }
 
-function sunDiv(sunData) {
-    let sunDiv = document.createElement("div");
-    sunDiv.style.display = "flex";
-    // sunDiv.style.justifyContent = "";
-    sunDiv.style.gap = "75px"
-    sunDiv.className = "transition-no-transform";
-
-    let sunriseDiv = document.createElement("div");
-    sunriseDiv.className = "sunrise-div"
-    
-    {
-        let img = document.createElement("img");
-        img.className = "sun-img"
-        img.src = "sunrise.svg";
-        sunriseDiv.appendChild(img);
-    }
-   
-    let sunrise = document.createElement("p");
-    sunrise.textContent = new Date(sunData.properties.sunrise.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
-    sunriseDiv.appendChild(sunrise);
-
-    let sunsetDiv = document.createElement("div");
-    sunsetDiv.className = "sunset-div"
-    {
-        let img = document.createElement("img");
-        img.className = "sun-img"
-        img.src = "sunset.svg";
-        sunsetDiv.appendChild(img);
-    }
-    let sunset = document.createElement("p");
-    sunset.textContent = new Date(sunData.properties.sunset.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
-    sunsetDiv.appendChild(sunset);
-
-    sunDiv.appendChild(sunriseDiv);
-    sunDiv.appendChild(sunsetDiv);
-    return sunDiv;
+function setInfo(sunData, waterData) {
+    document.getElementById("sunrise").textContent = new Date(sunData.properties.sunrise.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+    document.getElementById("sunset").textContent = new Date(sunData.properties.sunset.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+    document.getElementById("watertemp").textContent = Math.round(waterData.properties.timeseries[0].data.instant.details.sea_water_temperature) + "°";
 }
 
 // print calculated data to console as csv to be used as temp data for nn
@@ -160,12 +127,6 @@ function printCsv(forecast) {
     console.log(csv);
 }
 
-function setWaterTemp(tData) {
-    let span = document.createElement("span");
-    span.className = "waterTemp transition-no-transform";
-    span.textContent = Math.round(tData.properties.timeseries[0].data.instant.details.sea_water_temperature) + "°"
-    document.getElementById("waterTemp").appendChild(span);
-}
 
 function hourRow(hour) {
     let row = document.createElement("tr");
