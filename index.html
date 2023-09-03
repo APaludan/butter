@@ -9,6 +9,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"> </script> -->
 </head>
 
 <body>
@@ -26,6 +27,7 @@
                 <h1>🧈🧈</h1>
             </div>
         </div>
+        <div id="nn-text"></div>
         <h2 id="toggle" class="center-text"">Aalborg Cable Park</h2>
         <div id="chartDiv" class="hidden">
             <h3>windFromDirMultiplier (debug)</h3>
@@ -61,7 +63,7 @@
         <div style="margin-top: 20px; margin-bottom: 20px; opacity: 0;" id="footer">
             <a href="data.html">Send score</a>
             <br/>
-            <a href="index_nn.html">AI version (test)</a>
+            <a id="nn-link" href="index.html?nn=true">AI version (test)</a>
             <br />
             <p class="cc">Data from The Norwegian Meteorological Institute.</p>
             <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
@@ -75,6 +77,12 @@
             </p>
         </div>
     </div>
+    <script>
+        const useNN = new URL(window.location.href).searchParams.get('nn') == 'true';
+        if (useNN) {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"><\/script>');
+        }
+    </script> 
     <script src="script_nn.js"></script>
     <script src="extras.js"></script>
 </body>

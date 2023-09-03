@@ -1,4 +1,3 @@
-const useNN = window.location.href.includes("_nn.html");
 let model;
 
 class Multiplier {
