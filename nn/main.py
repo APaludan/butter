@@ -7,21 +7,21 @@ training_data, training_labels = get_data(is_train=True)
 validation_data, validation_labels = get_data(is_train=False)
 
 BATCH_SIZE = 50
-EPOCHS = 500
-LR = 1e-4
+EPOCHS = 200
+LR = 1e-3
 
 # model input: temp / 35, sinT, cosT, wx, wy
 model = tf.keras.Sequential([
-    tf.keras.layers.Dense(units = 10, input_dim=5),
-    tf.keras.layers.Dense(units = 10, activation=tf.nn.relu6),
-    tf.keras.layers.Dense(units = 1),
+    tf.keras.layers.Dense(10, input_dim=5),
+    tf.keras.layers.Dense(32, activation=tf.nn.relu6),
+    tf.keras.layers.Dense(1),
 ])
 
 model.compile(loss=tf.keras.losses.MeanAbsoluteError(),
               optimizer=tf.keras.optimizers.Adamax(learning_rate=LR))
 
 # model.build(input_shape=(None, 5))
-# model.load_weights("nn/model.h5")
+# model.load_weights("nn/model.keras")
 
 model.fit(training_data,
           training_labels,
@@ -36,7 +36,7 @@ model.fit(training_data,
 # print("eval:")
 # model.evaluate(test_data, test_labels)
 
-model.save("nn/model.h5")
+model.save("nn/model.keras")
 
 tfjs.converters.save_keras_model(model, "nn/tfjs_model")
 
