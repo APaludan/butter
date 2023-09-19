@@ -1,3 +1,4 @@
+
 let model;
 
 class Multiplier {
@@ -13,7 +14,6 @@ Date.prototype.getDKHours = function () {
 
 
 const wUrl = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
-const sUrl = getSUrl();
 const tUrl = "https://api.met.no/weatherapi/oceanforecast/2.0/complete?lat=56.988425&lon=10.286659";
 const tableDiv = document.getElementById("tableDiv");
 const windDirMultiplierArray = buildWindDirMultiplierArray();
@@ -26,31 +26,29 @@ try {
 }
 
 async function update() {
-    let wData, sData, tData;
+    let wData, tData;
     if (useNN) {
-        [model, wData, sData, tData] = await Promise.all([
+        [model, wData, tData] = await Promise.all([
             tf.loadLayersModel('nn/tfjs_model/model.json'),
             fetch(wUrl).then(response => response.json()),
-            fetch(sUrl, { mode: "cors"}).then(response => response.json()),
             fetch(tUrl).then(response => response.json())]);
         tf.setBackend('cpu');
         tf.enableProdMode();
     }
     else {
-        [wData, sData, tData] = await Promise.all([
+        [wData, tData] = await Promise.all([
             fetch(wUrl).then(response => response.json()),
-            fetch(sUrl).then(response => response.json()),
             fetch(tUrl).then(response => response.json())]);
     }
 
-    setInfo(sData, tData);
+    setInfo(tData);
 
-    let index = 0;
+    let idx = 0;
 
     // Skip old data
     let timeseries = wData.properties.timeseries;
-    while (new Date(timeseries[index].time).getHours() != new Date().getHours()) {
-        index++;
+    while (new Date(timeseries[idx].time).getHours() != new Date().getHours()) {
+        idx++;
     }
 
     let totalTime = 0; // used to test nn performance
@@ -58,7 +56,7 @@ async function update() {
     // build forecast
     let forecast = [];
     let day = [];
-    for (let i = index; i < timeseries.length; i++) {
+    for (let i = idx; i < timeseries.length; i++) {
         let hour = new Date(timeseries[i].time);
         if (hour.getDKHours() < 6 || hour.getDKHours() > 22) continue;
         let details = timeseries[i].data.instant.details;
@@ -109,11 +107,17 @@ async function update() {
     if (debug) printCsv(forecast);
 }
 
-function setInfo(sunData, waterData) {
-    document.getElementById("sunrise").textContent = new Date(sunData.properties.sunrise.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+function setInfo(waterData) {
+    const times = SunCalc.getTimes(new Date(), 57.0481, 9.941);
+    const sunriseStr = times.sunrise.getHours() + ':' + times.sunrise.getMinutes();
+    const sunsetStr = times.sunset.getHours() + ':' + times.sunset.getMinutes();
+
+    document.getElementById("sunrise").textContent = sunriseStr;
     document.getElementById("sunrise").classList.add("transition-no-transform");
-    document.getElementById("sunset").textContent = new Date(sunData.properties.sunset.time).toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+
+    document.getElementById("sunset").textContent = sunsetStr;
     document.getElementById("sunset").classList.add("transition-no-transform");
+    
     document.getElementById("watertemp").textContent = Math.round(waterData.properties.timeseries[0].data.instant.details.sea_water_temperature) + "°";
     document.getElementById("watertemp").classList.add("transition-no-transform");
 }
@@ -148,7 +152,7 @@ function hourRow(hour) {
     img.style.transform = "rotate(" + hour.toDirection + "deg)";
     img.style.height = "20px";
     img.style.marginLeft = "10px";
-    img.src = "arrow_lowres.png";
+    img.src = "imgs/arrow_lowres.png";
     wind.appendChild(img);
 
     score.textContent = hour.score;
@@ -301,24 +305,4 @@ function getDay(number) {
         case 6:
             return "Lørdag";
     }
-}
-
-function getTimezoneOffset(timeZone, date = new Date()) {
-    let dateString = date.toLocaleTimeString("en-US", { hour12: false, timeZone: timeZone, timeZoneName: "longOffset" });
-    let sign = dateString.slice(12, 13);
-    let hours = dateString.slice(13, 15);
-    let minutes = dateString.slice(16, 18);
-
-    // console.log(sign + hours + minutes);
-    return `${sign}${hours}:${minutes}`
-}
-
-function getSUrl() {
-    // const now = new Date();
-    // const year = now.getFullYear();
-    // const month = now.getMonth() + 1;
-    // const monthStr = month.toString().padStart(2, "0");
-    // const day = now.getDate();
-    // const dayStr = day.toString().padStart(2, "0");
-    return `https://api.met.no/weatherapi/sunrise/3.0/sun?&lat=57.0481&lon=9.941&offset=${getTimezoneOffset("Europe/Copenhagen")}`;
 }

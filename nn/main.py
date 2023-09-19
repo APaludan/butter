@@ -12,8 +12,8 @@ LR = 1e-4
 
 # model input: temp / 35, sinT, cosT, wx, wy
 model = tf.keras.Sequential([
-    tf.keras.layers.Dense(units = 15, input_dim=5),
-    tf.keras.layers.Dense(units = 64, activation=tf.nn.relu6),
+    tf.keras.layers.Dense(units = 10, input_dim=5),
+    tf.keras.layers.Dense(units = 10, activation=tf.nn.relu6),
     tf.keras.layers.Dense(units = 1),
 ])
 

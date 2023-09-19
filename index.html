@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="da">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Er det butter?</title>
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="imgs/favicon.ico">
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
 </head>
@@ -46,15 +46,15 @@
         <p class="center-text">Score: 0 er butter🧈, 10 er wack🌊</p>
         <div class="info">
             <div style="display: flex; flex-direction: column; align-items: center;">
-                <img src="sunrise.svg" class="sun-img">
+                <img src="imgs/sunrise.svg" class="sun-img">
                 <p id="sunrise">&#8203;</p> 
             </div>
             <div style="display: flex; flex-direction: column; align-items: center;">
-                <img src="sunset.svg" class="sun-img">
+                <img src="imgs/sunset.svg" class="sun-img">
                 <p id="sunset">&#8203;</p> 
             </div>
             <div style="display: flex; flex-direction: column; align-items: center;">
-                <img src="wave.svg" class="sun-img">
+                <img src="imgs/wave.svg" class="sun-img">
                 <p id="watertemp">&#8203;</p> 
             </div>
         </div>
@@ -82,8 +82,9 @@
             document.write('<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"><\/script>');
         }
     </script> 
-    <script src="script_nn.js"></script>
-    <script src="extras.js"></script>
+    <script src="js/suncalc/suncalc.js"></script>
+    <script src="js/script_nn.js"></script>
+    <script src="js/extras.js"></script>
 </body>
 
 </html>
