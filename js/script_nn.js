@@ -110,7 +110,7 @@ async function update() {
 function setInfo(waterData) {
     const times = SunCalc.getTimes(new Date(), 57.0481, 9.941);
     const sunriseStr = times.sunrise.getHours() + ':' + times.sunrise.getMinutes().toString().padStart(2, 0);
-    const sunsetStr = times.sunset.getHours() + ':' + times.sunset.getMinutes();
+    const sunsetStr = times.sunset.getHours() + ':' + times.sunset.getMinutes().toString().padStart(2, 0);
 
     document.getElementById("sunrise").textContent = sunriseStr;
     document.getElementById("sunrise").classList.add("transition-no-transform");
