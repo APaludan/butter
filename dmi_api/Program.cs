@@ -11,6 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+var url = $"http://0.0.0.0:{port}";
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -37,4 +40,4 @@ app.MapGet("/watertemp", async () =>
 .WithName("GetWaterTemp")
 .WithOpenApi();
 
-app.Run();
+app.Run(url);

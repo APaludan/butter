@@ -14,6 +14,7 @@ COPY . .
 WORKDIR "/src/."
 RUN dotnet build "./dmi_api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
+
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./dmi_api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
