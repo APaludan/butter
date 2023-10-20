@@ -14,7 +14,7 @@ Date.prototype.getDKHours = function () {
 
 
 const wUrl = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
-const tUrl = "https://api.met.no/weatherapi/oceanforecast/2.0/complete?lat=56.988425&lon=10.286659";
+const tUrl = "https://dmiapi-pfyplfu7ia-lz.a.run.app/watertemp";
 const tableDiv = document.getElementById("tableDiv");
 const windDirMultiplierArray = buildWindDirMultiplierArray();
 
@@ -31,14 +31,14 @@ async function update() {
         [model, wData, tData] = await Promise.all([
             tf.loadLayersModel('nn/tfjs_model/model.json'),
             fetch(wUrl).then(response => response.json()),
-            fetch(tUrl).then(response => response.json())]);
+            fetch(tUrl).then(response => response.text())]);
         tf.setBackend('cpu');
         tf.enableProdMode();
     }
     else {
         [wData, tData] = await Promise.all([
             fetch(wUrl).then(response => response.json()),
-            fetch(tUrl).then(response => response.json())]);
+            fetch(tUrl).then(response => response.text())]);
     }
 
     setInfo(tData);
@@ -118,7 +118,7 @@ function setInfo(waterData) {
     document.getElementById("sunset").textContent = sunsetStr;
     document.getElementById("sunset").classList.add("transition-no-transform");
     
-    document.getElementById("watertemp").textContent = Math.round(waterData.properties.timeseries[0].data.instant.details.sea_water_temperature) + "°";
+    document.getElementById("watertemp").textContent = Math.round(waterData) + "°";
     document.getElementById("watertemp").classList.add("transition-no-transform");
 }
 
