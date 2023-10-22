@@ -6,49 +6,56 @@ class Multiplier {
 }
 
 Date.prototype.getDKHours = function () {
-    return parseInt(this.toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen", hour: "2-digit", hour12: false }).split(".")[0]);
-}
-
+    return parseInt(
+        this.toLocaleTimeString("da-DK", {
+            timeZone: "Europe/Copenhagen",
+            hour: "2-digit",
+            hour12: false,
+        }).split(".")[0]
+    );
+};
 
 let model;
-const wUrl = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
+const wUrl =
+    "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
 const tUrl = "https://dmiapi-pfyplfu7ia-lz.a.run.app/watertemp";
 const tableDiv = document.getElementById("tableDiv");
 const windDirMultiplierArray = buildWindDirMultiplierArray();
 
 try {
-    update()
+    update();
 } catch (error) {
     alert(error);
 } finally {
-    fetch("https://ahpa.azurewebsites.net/api/counter", { method: "POST" })
+    fetch("https://ahpa.azurewebsites.net/api/counter", { method: "POST" });
 }
 
-
 async function update() {
-    let wData, tData;
-    tData = fetch(tUrl).then(response =>response.json()).then(data => setInfo(data));
+    let wData;
+    fetch(tUrl)
+        .then((response) => response.json())
+        .then((data) => setInfo(data));
     if (useNN) {
         [model, wData] = await Promise.all([
-            tf.loadLayersModel('nn/tfjs_model/model.json'),
-            fetch(wUrl).then(response => response.json())]);
-            tf.setBackend('cpu');
-            tf.enableProdMode();
-        }
-        else {
-            wData = await fetch(wUrl).then(response => response.json());
-        }
-        
-        let idx = 0;
-        
-        // Skip old data
-        let timeseries = wData.properties.timeseries;
-        while (new Date(timeseries[idx].time).getHours() != new Date().getHours()) {
-            idx++;
-        }
+            tf.loadLayersModel("nn/tfjs_model/model.json"),
+            fetch(wUrl).then((response) => response.json()),
+        ]);
+        tf.setBackend("cpu");
+        tf.enableProdMode();
+    } else {
+        wData = await fetch(wUrl).then((response) => response.json());
+    }
+
+    let idx = 0;
+
+    // Skip old data
+    let timeseries = wData.properties.timeseries;
+    while (new Date(timeseries[idx].time).getHours() != new Date().getHours()) {
+        idx++;
+    }
 
     let totalTime = 0; // used to test nn performance
-    
+
     // build forecast
     let forecast = [];
     let day = [];
@@ -59,7 +66,10 @@ async function update() {
         let temp = details.air_temperature;
         let wind = details.wind_speed;
         let direction = details.wind_from_direction;
-        if (day[0] != undefined && hour.getDKHours() < day[day.length - 1].hour.getDKHours()) {
+        if (
+            day[0] != undefined &&
+            hour.getDKHours() < day[day.length - 1].hour.getDKHours()
+        ) {
             forecast.push(day);
             day = [];
         }
@@ -68,67 +78,86 @@ async function update() {
         const t1 = performance.now();
         totalTime += t1 - t0;
     }
-    
-    console.log(`Total ${useNN ? "inference time" : "calc time"}: ${totalTime} milliseconds.`);
-    
+
+    console.log(
+        `Total ${
+            useNN ? "inference time" : "calc time"
+        }: ${totalTime} milliseconds.`
+    );
+
     // build html
     forecast.forEach((day, dIndex) => {
         let div = document.createElement("div");
         let date = document.createElement("h4");
         date.style.marginBottom = "5px";
         div.style.opacity = "0";
-        div.style.animationDelay = (dIndex * 0.2) + "s";
-        date.textContent = getDay(day[0].hour.getDay()) + " " + day[0].hour.toLocaleDateString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -5).replace(".", "/");
+        div.style.animationDelay = dIndex * 0.2 + "s";
+        date.textContent =
+            getDay(day[0].hour.getDay()) +
+            " " +
+            day[0].hour
+                .toLocaleDateString("da-DK", { timeZone: "Europe/Copenhagen" })
+                .slice(0, -5)
+                .replace(".", "/");
         div.appendChild(date);
         tableDiv.appendChild(div);
-        
+
         let table = document.createElement("table");
         table.appendChild(getTableHeader());
         let tbody = document.createElement("tbody");
-        
-        day.forEach(hour => {
+
+        day.forEach((hour) => {
             tbody.appendChild(hourRow(hour));
         });
-        
+
         table.appendChild(tbody);
         div.appendChild(table);
-        
-        
+
         div.className = "transition";
-        
+
         tableDiv.appendChild(div);
     });
     document.getElementById("footer").className = "transition";
-    
+
     if (debug) printCsv(forecast);
 }
 
 function setInfo(waterData) {
     const times = SunCalc.getTimes(new Date(), 57.0481, 9.941);
-    const sunriseStr = times.sunrise.getHours() + ':' + times.sunrise.getMinutes().toString().padStart(2, 0);
-    const sunsetStr = times.sunset.getHours() + ':' + times.sunset.getMinutes().toString().padStart(2, 0);
-    
+    const sunriseStr =
+        times.sunrise.getHours() +
+        ":" +
+        times.sunrise.getMinutes().toString().padStart(2, 0);
+    const sunsetStr =
+        times.sunset.getHours() +
+        ":" +
+        times.sunset.getMinutes().toString().padStart(2, 0);
+
     document.getElementById("sunrise").textContent = sunriseStr;
     document.getElementById("sunrise").classList.add("transition-no-transform");
-    
+
     document.getElementById("sunset").textContent = sunsetStr;
     document.getElementById("sunset").classList.add("transition-no-transform");
-    
-    document.getElementById("watertemp").textContent = Math.round(waterData) + "°";
-    document.getElementById("watertemp").classList.add("transition-no-transform");
+
+    document.getElementById("watertemp").textContent =
+        Math.round(waterData) + "°";
+    document
+        .getElementById("watertemp")
+        .classList.add("transition-no-transform");
 }
 
 // print calculated data to console as csv to be used as temp data for nn
 function printCsv(forecast) {
     let csv = "";
-    forecast.forEach(day => {
-        day.forEach(hour => {
-            csv += `${hour.hour.getDKHours()}, ${hour.temp}, ${hour.wind}, ${hour.fromDirection}, ${hour.score}\n`;
+    forecast.forEach((day) => {
+        day.forEach((hour) => {
+            csv += `${hour.hour.getDKHours()}, ${hour.temp}, ${hour.wind}, ${
+                hour.fromDirection
+            }, ${hour.score}\n`;
         });
     });
     console.log(csv);
 }
-
 
 function hourRow(hour) {
     let row = document.createElement("tr");
@@ -139,7 +168,10 @@ function hourRow(hour) {
     score.style.color = scoreColor(hour.score);
     score.style.fontWeight = "bold";
 
-    time.textContent = hour.hour.toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -3).replace(".", ":");
+    time.textContent = hour.hour
+        .toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" })
+        .slice(0, -3)
+        .replace(".", ":");
     temp.textContent = hour.temp.toFixed(0) + "°";
     if (temp.textContent === "-0°") temp.textContent = "0°";
     wind.textContent = hour.wind.toFixed(1);
@@ -162,7 +194,7 @@ function hourRow(hour) {
 
 class ForecastHour {
     constructor(hour, temp, wind, direction) {
-        this.hour = hour
+        this.hour = hour;
         this.temp = temp;
         this.wind = wind;
         this.fromDirection = direction;
@@ -171,10 +203,9 @@ class ForecastHour {
     }
 }
 
-
 function toWxWy(wind, direction) {
     // Convert to rad
-    let wd_rad = direction * Math.PI / 180;
+    let wd_rad = (direction * Math.PI) / 180;
     // Calculate the wind x and y components
     let wx = wind * Math.cos(wd_rad);
     let wy = wind * Math.sin(wd_rad);
@@ -182,7 +213,10 @@ function toWxWy(wind, direction) {
 }
 
 function to_sinT_cosT(hour) {
-    return [Math.sin(2 * Math.PI * hour / 24), Math.cos(2 * Math.PI * hour / 24)]
+    return [
+        Math.sin((2 * Math.PI * hour) / 24),
+        Math.cos((2 * Math.PI * hour) / 24),
+    ];
 }
 
 function calcButter(hour, temp, wind, direction) {
@@ -199,7 +233,7 @@ function calcButterNoNN(hour, temp, wind, direction) {
 function calcButterNN(hour, temp, wind, direction) {
     const [wx, wy] = toWxWy(wind, direction);
     const [sinT, cosT] = to_sinT_cosT(hour.getDKHours());
-    const inputTensor = tf.tensor([[temp / 35, sinT, cosT, wx, wy]])
+    const inputTensor = tf.tensor([[temp / 35, sinT, cosT, wx, wy]]);
     let res = model.predict(inputTensor).dataSync();
     if (res < 0) res = 0;
     return Math.round(res);
@@ -208,13 +242,13 @@ function calcButterNN(hour, temp, wind, direction) {
 // must have multiplier at 0 and 360
 function getMultipliers() {
     return [
-        new Multiplier(0, 0.9), 
+        new Multiplier(0, 0.9),
         new Multiplier(80, 0.6),
         new Multiplier(135, 0.35),
         new Multiplier(180, 0.3),
         new Multiplier(240, 0.5),
         new Multiplier(300, 0.75),
-        new Multiplier(360, 0.9)
+        new Multiplier(360, 0.9),
     ];
 }
 
@@ -228,7 +262,11 @@ function buildWindDirMultiplierArray() {
         let end = multipliers[i + 1].fromDirection;
         for (let j = start; j <= end; j++) {
             let distance = end - start;
-            array[j] = linearInterpolation(multipliers[i].value, multipliers[i + 1].value, (j - start) / distance);
+            array[j] = linearInterpolation(
+                multipliers[i].value,
+                multipliers[i + 1].value,
+                (j - start) / distance
+            );
         }
     }
 
@@ -239,10 +277,9 @@ function buildWindDirMultiplierArray() {
         div.style.backgroundColor = scoreColor(Math.round(array[i] * 8));
         div.style.flexGrow = "1";
         chart.appendChild(div);
-    };
+    }
     return array;
 }
-
 
 function linearInterpolation(a, b, t) {
     return a + (b - a) * t;
@@ -280,7 +317,7 @@ function getTableHeader() {
                                 <th>Vind m/s</th>
                                 <th>Score</th>
                             </tr>
-                        </thead>`
+                        </thead>`;
     return header;
 }
 
