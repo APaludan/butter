@@ -1,6 +1,3 @@
-
-let model;
-
 class Multiplier {
     constructor(fromDirection, value) {
         this.fromDirection = fromDirection;
@@ -13,6 +10,7 @@ Date.prototype.getDKHours = function () {
 }
 
 
+let model;
 const wUrl = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
 const tUrl = "https://dmiapi-pfyplfu7ia-lz.a.run.app/watertemp";
 const tableDiv = document.getElementById("tableDiv");
@@ -20,39 +18,37 @@ const windDirMultiplierArray = buildWindDirMultiplierArray();
 
 try {
     update()
-    fetch("https://ahpa.azurewebsites.net/api/counter", { method: "POST" })
 } catch (error) {
     alert(error);
+} finally {
+    fetch("https://ahpa.azurewebsites.net/api/counter", { method: "POST" })
 }
+
 
 async function update() {
     let wData, tData;
+    tData = fetch(tUrl).then(response =>response.json()).then(data => setInfo(data));
     if (useNN) {
-        [model, wData, tData] = await Promise.all([
+        [model, wData] = await Promise.all([
             tf.loadLayersModel('nn/tfjs_model/model.json'),
-            fetch(wUrl).then(response => response.json()),
-            fetch(tUrl).then(response => response.text())]);
-        tf.setBackend('cpu');
-        tf.enableProdMode();
-    }
-    else {
-        [wData, tData] = await Promise.all([
-            fetch(wUrl).then(response => response.json()),
-            fetch(tUrl).then(response => response.text())]);
-    }
-
-    setInfo(tData);
-
-    let idx = 0;
-
-    // Skip old data
-    let timeseries = wData.properties.timeseries;
-    while (new Date(timeseries[idx].time).getHours() != new Date().getHours()) {
-        idx++;
-    }
+            fetch(wUrl).then(response => response.json())]);
+            tf.setBackend('cpu');
+            tf.enableProdMode();
+        }
+        else {
+            wData = await fetch(wUrl).then(response => response.json());
+        }
+        
+        let idx = 0;
+        
+        // Skip old data
+        let timeseries = wData.properties.timeseries;
+        while (new Date(timeseries[idx].time).getHours() != new Date().getHours()) {
+            idx++;
+        }
 
     let totalTime = 0; // used to test nn performance
-
+    
     // build forecast
     let forecast = [];
     let day = [];
@@ -72,9 +68,9 @@ async function update() {
         const t1 = performance.now();
         totalTime += t1 - t0;
     }
-
+    
     console.log(`Total ${useNN ? "inference time" : "calc time"}: ${totalTime} milliseconds.`);
-
+    
     // build html
     forecast.forEach((day, dIndex) => {
         let div = document.createElement("div");
@@ -85,18 +81,18 @@ async function update() {
         date.textContent = getDay(day[0].hour.getDay()) + " " + day[0].hour.toLocaleDateString("da-DK", { timeZone: "Europe/Copenhagen" }).slice(0, -5).replace(".", "/");
         div.appendChild(date);
         tableDiv.appendChild(div);
-
+        
         let table = document.createElement("table");
         table.appendChild(getTableHeader());
         let tbody = document.createElement("tbody");
-
+        
         day.forEach(hour => {
             tbody.appendChild(hourRow(hour));
         });
-
+        
         table.appendChild(tbody);
         div.appendChild(table);
-
+        
         
         div.className = "transition";
         
@@ -111,10 +107,10 @@ function setInfo(waterData) {
     const times = SunCalc.getTimes(new Date(), 57.0481, 9.941);
     const sunriseStr = times.sunrise.getHours() + ':' + times.sunrise.getMinutes().toString().padStart(2, 0);
     const sunsetStr = times.sunset.getHours() + ':' + times.sunset.getMinutes().toString().padStart(2, 0);
-
+    
     document.getElementById("sunrise").textContent = sunriseStr;
     document.getElementById("sunrise").classList.add("transition-no-transform");
-
+    
     document.getElementById("sunset").textContent = sunsetStr;
     document.getElementById("sunset").classList.add("transition-no-transform");
     
