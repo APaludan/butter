@@ -32,8 +32,7 @@ try {
 
 async function update() {
     let wData;
-    fetch(tUrl)
-        .then((response) => setInfo(response));
+    fetch(tUrl).then((response) => setInfo(response));
     if (useNN) {
         [model, wData] = await Promise.all([
             tf.loadLayersModel("nn/tfjs_model/model.json"),
@@ -79,8 +78,7 @@ async function update() {
     }
 
     console.log(
-        `Total ${
-            useNN ? "inference time" : "calc time"
+        `Total ${useNN ? "inference time" : "calc time"
         }: ${totalTime} milliseconds.`
     );
 
@@ -157,9 +155,8 @@ function printCsv(forecast) {
     let csv = "";
     forecast.forEach((day) => {
         day.forEach((hour) => {
-            csv += `${hour.hour.getDKHours()}, ${hour.temp}, ${hour.wind}, ${
-                hour.fromDirection
-            }, ${hour.score}\n`;
+            csv += `${hour.hour.getDKHours()}, ${hour.temp}, ${hour.wind}, ${hour.fromDirection
+                }, ${hour.score}\n`;
         });
     });
     console.log(csv);
