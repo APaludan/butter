@@ -33,8 +33,7 @@ try {
 async function update() {
     let wData;
     fetch(tUrl)
-        .then((response) => response.json())
-        .then((data) => setInfo(data));
+        .then((response) => setInfo(response));
     if (useNN) {
         [model, wData] = await Promise.all([
             tf.loadLayersModel("nn/tfjs_model/model.json"),
@@ -122,7 +121,7 @@ async function update() {
     if (debug) printCsv(forecast);
 }
 
-function setInfo(waterData) {
+async function setInfo(response) {
     const times = SunCalc.getTimes(new Date(), 57.0481, 9.941);
     const sunriseStr =
         times.sunrise.getHours() +
@@ -139,8 +138,15 @@ function setInfo(waterData) {
     document.getElementById("sunset").textContent = sunsetStr;
     document.getElementById("sunset").classList.add("transition-no-transform");
 
-    document.getElementById("watertemp").textContent =
-        Math.round(waterData) + "°";
+    if (response.ok) {
+        document.getElementById("watertemp").textContent =
+            Math.round(await response.json()) + "°";
+    }
+    else {
+        const details = (await response.json()).detail;
+        console.log(details)
+        document.getElementById("watertemp").textContent = details;
+    }
     document
         .getElementById("watertemp")
         .classList.add("transition-no-transform");
