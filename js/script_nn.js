@@ -26,10 +26,7 @@ try {
     update();
 } catch (error) {
     alert(error);
-} finally {
-    fetch("https://ahpa.azurewebsites.net/api/counter", { method: "POST" });
 }
-
 async function update() {
     let wData;
     fetch(tUrl).then((response) => setInfo(response));
