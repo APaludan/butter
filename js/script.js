@@ -15,7 +15,6 @@ Date.prototype.getDKHours = function () {
     );
 };
 
-let model;
 const wUrl =
     "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
 const tUrl = "https://dmiapi-pfyplfu7ia-lz.a.run.app/watertemp";
@@ -30,16 +29,7 @@ try {
 async function update() {
     let wData;
     fetch(tUrl).then((response) => setInfo(response));
-    if (useNN) {
-        [model, wData] = await Promise.all([
-            tf.loadLayersModel("nn/tfjs_model/model.json"),
-            fetch(wUrl).then((response) => response.json()),
-        ]);
-        tf.setBackend("cpu");
-        tf.enableProdMode();
-    } else {
-        wData = await fetch(wUrl).then((response) => response.json());
-    }
+    wData = await fetch(wUrl).then((response) => response.json());
 
     let idx = 0;
 
@@ -48,8 +38,6 @@ async function update() {
     while (new Date(timeseries[idx].time).getHours() != new Date().getHours()) {
         idx++;
     }
-
-    let totalTime = 0; // used to test nn performance
 
     // build forecast
     let forecast = [];
@@ -68,16 +56,9 @@ async function update() {
             forecast.push(day);
             day = [];
         }
-        const t0 = performance.now();
         day.push(new ForecastHour(hour, temp, wind, direction));
-        const t1 = performance.now();
-        totalTime += t1 - t0;
     }
 
-    console.log(
-        `Total ${useNN ? "inference time" : "calc time"
-        }: ${totalTime} milliseconds.`
-    );
 
     // build html
     forecast.forEach((day, dIndex) => {
@@ -199,45 +180,15 @@ class ForecastHour {
         this.wind = wind;
         this.fromDirection = direction;
         this.toDirection = (direction + 180) % 360;
-        this.score = calcButter(hour, temp, wind, direction);
+        this.score = calcButter(wind, direction);
     }
 }
 
-function toWxWy(wind, direction) {
-    // Convert to rad
-    let wd_rad = (direction * Math.PI) / 180;
-    // Calculate the wind x and y components
-    let wx = wind * Math.cos(wd_rad);
-    let wy = wind * Math.sin(wd_rad);
-    return [wx, wy];
-}
-
-function to_sinT_cosT(hour) {
-    return [
-        Math.sin((2 * Math.PI * hour) / 24),
-        Math.cos((2 * Math.PI * hour) / 24),
-    ];
-}
-
-function calcButter(hour, temp, wind, direction) {
-    if (useNN) return calcButterNN(hour, temp, wind, direction);
+function calcButter(wind, direction) {
     let score = wind * windDirMultiplierArray[Math.round(direction)];
     return Math.round(score);
 }
 
-function calcButterNoNN(hour, temp, wind, direction) {
-    let score = wind * windDirMultiplierArray[Math.round(direction)];
-    return Math.round(score);
-}
-
-function calcButterNN(hour, temp, wind, direction) {
-    const [wx, wy] = toWxWy(wind, direction);
-    const [sinT, cosT] = to_sinT_cosT(hour.getDKHours());
-    const inputTensor = tf.tensor([[temp / 35, sinT, cosT, wx, wy]]);
-    let res = model.predict(inputTensor).dataSync();
-    if (res < 0) res = 0;
-    return Math.round(res);
-}
 
 // must have multiplier at 0 and 360
 function getMultipliers() {
