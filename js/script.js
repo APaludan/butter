@@ -16,7 +16,7 @@ Date.prototype.getDKHours = function () {
 };
 
 const wUrl =
-    "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.0481&lon=9.941";
+    "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.048&lon=9.941";
 const tUrl = "https://dmiapi-pfyplfu7ia-lz.a.run.app/watertemp";
 const tableDiv = document.getElementById("tableDiv");
 const windDirMultiplierArray = buildWindDirMultiplierArray();
@@ -27,9 +27,8 @@ try {
     alert(error);
 }
 async function update() {
-    let wData;
     fetch(tUrl).then((response) => setInfo(response));
-    wData = await fetch(wUrl).then((response) => response.json());
+    let wData = await fetch(wUrl).then((response) => response.json());
 
     let idx = 0;
 
@@ -68,7 +67,7 @@ async function update() {
         div.style.opacity = "0";
         div.style.animationDelay = dIndex * 0.2 + "s";
         date.textContent =
-            getDay(day[0].hour.getDay()) +
+            dayNumberToString(day[0].hour.getDay()) +
             " " +
             day[0].hour
                 .toLocaleDateString("da-DK", { timeZone: "Europe/Copenhagen" })
@@ -213,7 +212,7 @@ function buildWindDirMultiplierArray() {
         let end = multipliers[i + 1].fromDirection;
         for (let j = start; j <= end; j++) {
             let distance = end - start;
-            array[j] = linearInterpolation(
+            array[j] = lerp(
                 multipliers[i].value,
                 multipliers[i + 1].value,
                 (j - start) / distance
@@ -232,7 +231,7 @@ function buildWindDirMultiplierArray() {
     return array;
 }
 
-function linearInterpolation(a, b, t) {
+function lerp(a, b, t) {
     return a + (b - a) * t;
 }
 
@@ -272,7 +271,8 @@ function getTableHeader() {
     return header;
 }
 
-function getDay(number) {
+
+function dayNumberToString(number) {
     switch (number) {
         case 0:
             return "Søndag";
