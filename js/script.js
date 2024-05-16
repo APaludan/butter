@@ -15,9 +15,9 @@ Date.prototype.getDKHours = function () {
     );
 };
 
-const wUrl =
+const weatherUrl =
     "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.048&lon=9.941";
-const tUrl = "https://dmiapi-pfyplfu7ia-lz.a.run.app/watertemp";
+const tempUrl = "https://worker-plain-unit-a5fd.andreashp.workers.dev/";
 const tableDiv = document.getElementById("tableDiv");
 const windDirMultiplierArray = buildWindDirMultiplierArray();
 
@@ -27,8 +27,8 @@ try {
     alert(error);
 }
 async function update() {
-    fetch(tUrl).then((response) => setInfo(response));
-    let wData = await fetch(wUrl).then((response) => response.json());
+    fetch(tempUrl).then((response) => setTopInfo(response));
+    let wData = await fetch(weatherUrl).then((response) => response.json());
 
     let idx = 0;
 
@@ -67,7 +67,7 @@ async function update() {
         div.style.opacity = "0";
         div.style.animationDelay = dIndex * 0.2 + "s";
         date.textContent =
-            dayNumberToString(day[0].hour.getDay()) +
+            dayToString(day[0].hour.getDay()) +
             " " +
             day[0].hour
                 .toLocaleDateString("da-DK", { timeZone: "Europe/Copenhagen" })
@@ -96,7 +96,7 @@ async function update() {
     if (debug) printCsv(forecast);
 }
 
-async function setInfo(response) {
+async function setTopInfo(response) {
     const times = SunCalc.getTimes(new Date(), 57.0481, 9.941);
     const sunriseStr =
         times.sunrise.getHours() +
@@ -272,7 +272,7 @@ function getTableHeader() {
 }
 
 
-function dayNumberToString(number) {
+function dayToString(number) {
     switch (number) {
         case 0:
             return "Søndag";
