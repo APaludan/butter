@@ -17,7 +17,7 @@ Date.prototype.getDKHours = function () {
 
 const weatherUrl =
     "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.048&lon=9.941";
-const tempUrl = "https://worker-plain-unit-a5fd.andreashp.workers.dev/";
+const tempUrl = "/temp";
 const tableDiv = document.getElementById("tableDiv");
 const windDirMultiplierArray = buildWindDirMultiplierArray();
 
@@ -27,7 +27,8 @@ try {
     alert(error);
 }
 async function update() {
-    fetch(tempUrl).then((response) => setTopInfo(response));
+    fetch(tempUrl).then((response) => setWaterTemp(response));
+    setSunTimes();
     let wData = await fetch(weatherUrl).then((response) => response.json());
 
     let idx = 0;
@@ -96,7 +97,7 @@ async function update() {
     if (debug) printCsv(forecast);
 }
 
-async function setTopInfo(response) {
+function setSunTimes() {
     const times = SunCalc.getTimes(new Date(), 57.0481, 9.941);
     const sunriseStr =
         times.sunrise.getHours() +
@@ -112,7 +113,9 @@ async function setTopInfo(response) {
 
     document.getElementById("sunset").textContent = sunsetStr;
     document.getElementById("sunset").classList.add("transition-no-transform");
+}
 
+async function setWaterTemp(response) {
     if (response.ok) {
         document.getElementById("watertemp").textContent =
             Math.round(await response.json()) + "°";
