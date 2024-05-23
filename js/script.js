@@ -17,7 +17,7 @@ Date.prototype.getDKHours = function () {
 
 const weatherUrl =
     "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.048&lon=9.941";
-const tempUrl = "/temp";
+const tempUrl = "https://erdetbutter.dk/temp";
 const tableDiv = document.getElementById("tableDiv");
 const windDirMultiplierArray = buildWindDirMultiplierArray();
 
@@ -116,15 +116,15 @@ function setSunTimes() {
 }
 
 async function setWaterTemp(response) {
-    if (response.ok) {
-        document.getElementById("watertemp").textContent =
+    try {
+        document.getElementById("watertemp").innerHTML =
             Math.round(await response.json()) + "°";
+        document.getElementById("watertemp").classList.remove("spinner");
+    } catch {
+        document.getElementById("watertemp").innerHTML = "&#9888;";
+        document.getElementById("watertemp").classList.replace("spinner", "error");
     }
-    else {
-        const details = (await response.json()).detail;
-        console.log(details)
-        document.getElementById("watertemp").textContent = details;
-    }
+
     document
         .getElementById("watertemp")
         .classList.add("transition-no-transform");

@@ -194,3 +194,23 @@ button {
     text-align: center;
 }
 
+.spinner {
+    display: inline;
+    border: 1px solid transparent;
+    border-top: 1px solid dodgerblue;
+    border-bottom: 1px solid dodgerblue;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    aspect-ratio: 1 / 1;
+    animation: spin 1s linear infinite;
+}
+
+.error {
+    color: indianred;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
