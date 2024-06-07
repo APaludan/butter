@@ -200,8 +200,8 @@ button {
     border-top: 1px solid dodgerblue;
     border-bottom: 1px solid dodgerblue;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
+    width: 19px;
+    height: 19px;
     aspect-ratio: 1 / 1;
     animation: spin 1s linear infinite;
 }
