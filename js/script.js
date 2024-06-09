@@ -74,16 +74,7 @@ async function update() {
                 .toLocaleDateString("da-DK", { timeZone: "Europe/Copenhagen" })
                 .slice(0, -5)
                 .replace(".", "/");
-
-        const observer = new IntersectionObserver(
-            ([e]) => e.target.classList.toggle('shadow', e.intersectionRatio < 1), {
-            rootMargin: "-1px 0px 0px 0px",
-            threshold: [1]
-        });
-
-        
-        observer.observe(date);
-        div.appendChild(date);  
+        div.appendChild(date);
         tableDiv.appendChild(div);
 
         let table = document.createElement("table");
