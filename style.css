@@ -12,10 +12,18 @@ body {
 h4 {
     position: sticky;
     top: 0px;
-    background-color: #f5f5f5e3;
+    background-color: #f5f5f5e9;
     z-index: 10;
     padding: 10px 0px;
+    border-bottom: 1px solid transparent;
+    transition: 100ms border-bottom ease-in-out;
+    }
+    
+.shadow {
+    transition: 200ms border-bottom ease-in-out;
+    border-bottom: 1px solid grey;
 }
+
 
 .container {
     position: relative;
