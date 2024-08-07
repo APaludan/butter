@@ -45,6 +45,9 @@ async function update() {
     for (let i = idx; i < timeseries.length; i++) {
         let hour = new Date(timeseries[i].time);
         if (hour.getDKHours() < 6 || hour.getDKHours() > 22) continue;
+        let rain = timeseries[i].data.next_1_hours?.details?.precipitation_amount ?? 
+            timeseries[i].data.next_6_hours?.details?.precipitation_amount;
+        console.log(rain);
         let details = timeseries[i].data.instant.details;
         let temp = details.air_temperature;
         let wind = details.wind_speed;
@@ -56,7 +59,7 @@ async function update() {
             forecast.push(day);
             day = [];
         }
-        day.push(new ForecastHour(hour, temp, wind, direction));
+        day.push(new ForecastHour(hour, temp, wind, direction, rain));
     }
 
 
@@ -157,6 +160,16 @@ function hourRow(hour) {
         .replace(".", ":");
     temp.textContent = hour.temp.toFixed(0) + "°";
     if (temp.textContent === "-0°") temp.textContent = "0°";
+    if (hour.rain > 0.25) {
+        let img = document.createElement("img");
+        img.style.height = "20px";
+        img.style.marginLeft = "10px";
+        img.style.marginBottom = "-5px";
+        img.src = "imgs/rain_lowres.png";
+        temp.appendChild(img);
+    }
+
+
     wind.textContent = hour.wind.toFixed(1);
 
     let img = document.createElement("img");
@@ -176,10 +189,11 @@ function hourRow(hour) {
 }
 
 class ForecastHour {
-    constructor(hour, temp, wind, direction) {
+    constructor(hour, temp, wind, direction, rain) {
         this.hour = hour;
         this.temp = temp;
         this.wind = wind;
+        this.rain = rain
         this.fromDirection = direction;
         this.toDirection = (direction + 180) % 360;
         this.score = calcButter(wind, direction);
