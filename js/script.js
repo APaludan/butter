@@ -160,12 +160,19 @@ function hourRow(hour) {
         .replace(".", ":");
     temp.textContent = hour.temp.toFixed(0) + "°";
     if (temp.textContent === "-0°") temp.textContent = "0°";
-    if (hour.rain > 0.25) {
+    if (hour.rain > 0.1) {
         let img = document.createElement("img");
         img.style.height = "20px";
         img.style.marginLeft = "10px";
         img.style.marginBottom = "-5px";
-        img.src = "imgs/rain_lowres.png";
+        if (hour.rain < 0.5) {
+            img.src = "imgs/rain_low.png";
+        } else if (hour.rain < 1.0) {
+            img.src = "imgs/rain_mid.png";
+        }
+        else {
+            img.src = "imgs/rain_high.png";
+        }
         temp.appendChild(img);
     }
 
