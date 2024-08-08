@@ -156,8 +156,9 @@ function hourRow(hour) {
 
     time.textContent = hour.hour
         .toLocaleTimeString("da-DK", { timeZone: "Europe/Copenhagen" })
-        .slice(0, -3)
-        .replace(".", ":");
+        .slice(0, -6)
+        // .slice(0, -3)
+        // .replace(".", ":");
     temp.textContent = hour.temp.toFixed(0) + "°";
     if (temp.textContent === "-0°") temp.textContent = "0°";
     if (hour.rain > 0.1) {
