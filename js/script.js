@@ -17,7 +17,7 @@ Date.prototype.getDKHours = function () {
 
 const weatherUrl =
     "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.048&lon=9.941";
-const tempUrl = "https://erdetbutter.dk/temp";
+const tempUrl = "https://worker-plain-unit-a5fd.andreashp.workers.dev/";
 const tableDiv = document.getElementById("tableDiv");
 const windDirMultiplierArray = buildWindDirMultiplierArray();
 
