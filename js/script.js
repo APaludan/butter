@@ -27,7 +27,7 @@ try {
     alert(error);
 }
 async function update() {
-    fetch(tempUrl).then((response) => setWaterTemp(response));
+    fetch(tempUrl).then((response) => setWaterTemp(response)).catch((err) => console.log(err));
     setSunTimes();
     let wData = await fetch(weatherUrl).then((response) => response.json());
 
@@ -120,6 +120,8 @@ function setSunTimes() {
 
 async function setWaterTemp(response) {
     try {
+        if (!response.ok) throw new Error();
+        
         document.getElementById("watertemp").innerHTML =
             Math.round(await response.json()) + "°";
         document.getElementById("watertemp").classList.remove("spinner");
