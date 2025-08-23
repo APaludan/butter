@@ -47,7 +47,6 @@ async function update() {
         if (hour.getDKHours() < 6 || hour.getDKHours() > 22) continue;
         let rain = timeseries[i].data.next_1_hours?.details?.precipitation_amount ?? 
             timeseries[i].data.next_6_hours?.details?.precipitation_amount;
-        console.log(rain);
         let details = timeseries[i].data.instant.details;
         let temp = details.air_temperature;
         let wind = details.wind_speed;
