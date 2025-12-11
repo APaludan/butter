@@ -3,6 +3,9 @@ class Multiplier {
         this.fromDirection = fromDirection;
         this.value = value;
     }
+
+
+    
 }
 
 Date.prototype.getDKHours = function () {
