@@ -3,9 +3,6 @@ class Multiplier {
         this.fromDirection = fromDirection;
         this.value = value;
     }
-
-
-    
 }
 
 Date.prototype.getDKHours = function () {
@@ -20,7 +17,7 @@ Date.prototype.getDKHours = function () {
 
 const weatherUrl =
     "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=57.048&lon=9.941";
-const tempUrl = "https://worker-plain-unit-a5fd.andreashp.workers.dev/";
+const tempUrl = "https://opendataapi.dmi.dk/v2/oceanObs/collections/observation/items?limit=1&parameterId=tw&stationId=20567";
 const tableDiv = document.getElementById("tableDiv");
 const windDirMultiplierArray = buildWindDirMultiplierArray();
 
@@ -123,9 +120,10 @@ function setSunTimes() {
 async function setWaterTemp(response) {
     try {
         if (!response.ok) throw new Error();
-        
+        const json = await response.json();
+        const temperature = json.features[0].properties.value;
         document.getElementById("watertemp").innerHTML =
-            Math.round(await response.json()) + "°";
+            Math.round(temperature) + "°";
         document.getElementById("watertemp").classList.remove("spinner");
     } catch {
         document.getElementById("watertemp").innerHTML = "&#9888;";
