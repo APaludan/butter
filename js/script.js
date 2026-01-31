@@ -5,6 +5,7 @@ const CONFIG = {
     timezone: "Europe/Copenhagen",
     multipliers: [
         // must have multiplier at 0 and 360
+        // must be sorted
         // d: from direction
         // v: value
         { d: 0, v: 0.9 },
@@ -16,12 +17,11 @@ const CONFIG = {
         { d: 360, v: 0.9 },
     ],
 }
+
 const DATA_SOURCES = {
     weather: `https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${CONFIG.lat}&lon=${CONFIG.lon}`,
     waterTemp: `https://opendataapi.dmi.dk/v2/oceanObs/collections/observation/items?limit=1&parameterId=tw&stationId=${CONFIG.stationId}`
 }
-
-const MULTIPLIERS = buildMultiplierArray();
 
 const FORMATTERS = {
     hour: new Intl.DateTimeFormat("da-DK", { hour: "2-digit", hour12: false, timeZone: CONFIG.timezone }),
@@ -33,9 +33,20 @@ const getDKHour = (date) => {
     return parseInt(FORMATTERS.hour.format(date));
 };
 
-
 const getDKDay = (date) => {
     return parseInt(FORMATTERS.day.format(date));
+};
+
+
+const getMultiplier = (direction) => {
+    const m = CONFIG.multipliers;
+    for (let i = 0; i < m.length - 1; i++) {
+        if (direction >= m[i].d && direction <= m[i + 1].d) {
+            const t = (direction - m[i].d) / (m[i + 1].d - m[i].d);
+            return m[i].v + (m[i + 1].v - m[i].v) * t;
+        }
+    }
+    return m[0].v;
 };
 
 
@@ -210,30 +221,11 @@ class ForecastHour {
 }
 
 function calcButter(wind, direction) {
-    const score = wind * MULTIPLIERS[Math.round(direction)];
+    const score = wind * getMultiplier(Math.round(direction));
     return Math.round(score);
 }
 
 
-function buildMultiplierArray() {
-    const lerp = (a, b, t) => a + (b - a) * t;
-    const arr = [];
-
-    for (let i = 0; i < CONFIG.multipliers.length - 1; i++) {
-        const start = CONFIG.multipliers[i].d;
-        const end = CONFIG.multipliers[i + 1].d;
-        for (let j = start; j <= end; j++) {
-            const distance = end - start;
-            arr[j] = lerp(
-                CONFIG.multipliers[i].v,
-                CONFIG.multipliers[i + 1].v,
-                (j - start) / distance
-            );
-        }
-    }
-
-    return arr;
-}
 
 async function init() {
     try {
