@@ -1,9 +1,9 @@
 const CONFIG = {
-    LAT: 57.048,
-    LON: 9.941,
-    STATION_ID: 20567,
-    TIMEZONE: "Europe/Copenhagen",
-    MULTIPLIERS: [
+    lat: 57.048,
+    lon: 9.941,
+    stationId: 20567,
+    timezone: "Europe/Copenhagen",
+    multipliers: [
         // must have multiplier at 0 and 360
         // d: from direction
         // v: value
@@ -17,22 +17,25 @@ const CONFIG = {
     ],
 }
 const DATA_SOURCES = {
-    WEATHER: `https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${CONFIG.LAT}&lon=${CONFIG.LON}`,
-    WATER_TEMP: `https://opendataapi.dmi.dk/v2/oceanObs/collections/observation/items?limit=1&parameterId=tw&stationId=${CONFIG.STATION_ID}`
+    weather: `https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${CONFIG.lat}&lon=${CONFIG.lon}`,
+    waterTemp: `https://opendataapi.dmi.dk/v2/oceanObs/collections/observation/items?limit=1&parameterId=tw&stationId=${CONFIG.stationId}`
 }
 
 const MULTIPLIERS = buildMultiplierArray();
 
-
-const getDKPart = (date, options) => {
-    return new Intl.DateTimeFormat("da-DK", {
-        timeZone: CONFIG.TIMEZONE,
-        ...options
-    }).format(date);
+const FORMATTERS = {
+    hour: new Intl.DateTimeFormat("da-DK", { hour: "2-digit", hour12: false, timeZone: CONFIG.timezone }),
+    day: new Intl.DateTimeFormat("da-DK", { day: "numeric", timeZone: CONFIG.timezone }),
+    fullDate: new Intl.DateTimeFormat("da-DK", { weekday: 'long', day: 'numeric', month: 'numeric', timeZone: CONFIG.timezone })
 };
 
 const getDKHour = (date) => {
-    return parseInt(getDKPart(date, { hour: "2-digit", hour12: false }));
+    return parseInt(FORMATTERS.hour.format(date));
+};
+
+
+const getDKDay = (date) => {
+    return parseInt(FORMATTERS.day.format(date));
 };
 
 
@@ -40,8 +43,8 @@ const getDKHour = (date) => {
 class WeatherService {
     static async fetchData() {
         const results = await Promise.allSettled([
-            fetch(DATA_SOURCES.WEATHER).then(r => r.json()),
-            fetch(DATA_SOURCES.WATER_TEMP).then(r => r.json())
+            fetch(DATA_SOURCES.weather).then(r => r.json()),
+            fetch(DATA_SOURCES.waterTemp).then(r => r.json())
         ]);
 
         const weatherRes = results[0].status === 'fulfilled' ? results[0].value : null;
@@ -55,25 +58,25 @@ class WeatherService {
 
     static processForecast(wData) {
         const timeseries = wData.properties.timeseries;
-        
+
         const now = new Date();
         const currentDKHour = getDKHour(now);
-        const currentDKDay = getDKPart(now, { day: "numeric" });
+        const currentDKDay = getDKDay(now);
 
         const days = [];
         let currentDay = [];
 
-        timeseries.forEach(item => {
+        for (const item of timeseries) {
             const time = new Date(item.time);
             const dkHour = getDKHour(time);
-            const dkDay = getDKPart(time, { day: "numeric"});
+            const dkDay = getDKDay(time);
 
             // filter past hours and night hours
-            if (dkDay === currentDKDay && dkHour < currentDKHour) return;
-            if (dkHour < 6 || dkHour > 22) return;
+            if (dkDay === currentDKDay && dkHour < currentDKHour) continue;
+            if (dkHour < 6 || dkHour > 22) continue;
 
             const rain = item.data.next_1_hours?.details?.precipitation_amount ??
-                (item.data.next_6_hours?.details?.precipitation_amount / 5.0) ?? 0;
+                (item.data.next_6_hours?.details?.precipitation_amount / 6.0) ?? 0;
 
             const details = item.data.instant.details;
             const hour = new ForecastHour(
@@ -84,12 +87,12 @@ class WeatherService {
                 rain
             );
 
-            if (currentDay.length > 0 && dkDay !== getDKPart(currentDay[0].time, { day: "numeric"})) {
+            if (currentDay.length > 0 && dkDay !== getDKDay(currentDay[0].time)) {
                 days.push(currentDay);
                 currentDay = [];
             }
             currentDay.push(hour);
-        });
+        }
 
         if (currentDay.length) days.push(currentDay);
 
@@ -99,7 +102,7 @@ class WeatherService {
 
 class UI {
     static setSunTimes() {
-        const times = SunCalc.getTimes(new Date(), CONFIG.LAT, CONFIG.LON);
+        const times = SunCalc.getTimes(new Date(), CONFIG.lat, CONFIG.lon);
         const sunriseStr = `${times.sunrise.getHours()}:${times.sunrise.getMinutes().toString().padStart(2, 0)}`;
         const sunsetStr = `${times.sunset.getHours()}:${times.sunset.getMinutes().toString().padStart(2, 0)}`;
 
@@ -156,10 +159,10 @@ class UI {
         container.className = "transition";
         container.style.animationDelay = `${index * 0.2}s`;
 
-        const dateStr = `${this.#getDayName(day[0].time)} ${day[0].time.getDate()}/${day[0].time.getMonth() + 1}`;
+        const title = FORMATTERS.fullDate.format(day[0].time).replace('.', '/');
 
         container.innerHTML = `
-            <h4 style="margin-bottom: 5px; text-transform: capitalize;">${dateStr}</h4>
+            <h4 style="margin-bottom: 5px; text-transform: capitalize;">${title}</h4>
             <table>
                 <thead>
                     <tr><th>Time</th><th>Temp &degC</th><th>Vind m/s</th><th>Score</th></tr>
@@ -167,7 +170,7 @@ class UI {
                 <tbody>
                     ${day.map(h => `
                         <tr>
-                            <td>${getDKPart(h.time, { hour: '2-digit', timeZone: CONFIG.TIMEZONE })}</td>
+                            <td>${getDKHour(h.time).toString().padStart(2, '0')}</td>
                             <td>${Math.round(h.temp)}° ${this.#getRainIcon(h.rain)}</td>
                             <td>
                                 <span class="wind-span">${h.wind.toFixed(0)}</span>
@@ -181,10 +184,6 @@ class UI {
         `;
         return container;
     }
-
-    static #getDayName = (date) => {
-        return new Intl.DateTimeFormat("da-DK", { weekday: 'long' }).format(date);
-    };
 
     static setYrError() {
         const tableDiv = document.getElementById("tableDiv");
@@ -218,44 +217,47 @@ function calcButter(wind, direction) {
 
 function buildMultiplierArray() {
     const lerp = (a, b, t) => a + (b - a) * t;
-    const array = [];
+    const arr = [];
 
-    for (let i = 0; i < CONFIG.MULTIPLIERS.length - 1; i++) {
-        let start = CONFIG.MULTIPLIERS[i].d;
-        let end = CONFIG.MULTIPLIERS[i + 1].d;
+    for (let i = 0; i < CONFIG.multipliers.length - 1; i++) {
+        const start = CONFIG.multipliers[i].d;
+        const end = CONFIG.multipliers[i + 1].d;
         for (let j = start; j <= end; j++) {
-            let distance = end - start;
-            array[j] = lerp(
-                CONFIG.MULTIPLIERS[i].v,
-                CONFIG.MULTIPLIERS[i + 1].v,
+            const distance = end - start;
+            arr[j] = lerp(
+                CONFIG.multipliers[i].v,
+                CONFIG.multipliers[i + 1].v,
                 (j - start) / distance
             );
         }
     }
 
-    return array;
+    return arr;
 }
 
 async function init() {
     try {
-        UI.setSunTimes();
 
         const { weather, waterTemp } = await WeatherService.fetchData();
-        UI.setWaterTemp(waterTemp);
 
         if (weather) {
             const forecastDays = WeatherService.processForecast(weather);
-            const tableDiv = document.getElementById("tableDiv");
 
+            const fragment = document.createDocumentFragment();
             forecastDays.forEach((day, i) => {
-                tableDiv.appendChild(UI.createDayTable(day, i));
+                fragment.appendChild(UI.createDayTable(day, i));
             });
 
+            document.getElementById("tableDiv").appendChild(fragment);
             document.getElementById("footer").className = "transition";
         }
         else {
             UI.setYrError();
         }
+
+        UI.setWaterTemp(waterTemp);
+        UI.setSunTimes();
+
     } catch (error) {
         console.log(error);
         alert(error);
