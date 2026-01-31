@@ -87,6 +87,11 @@ tbody tr:not(:hover) {
     transition-duration: 100ms;
 }
 
+.wind-span {
+    display: inline-block;
+    min-width: 2ch;
+}
+
 .hidden {
     display: none;
 }

@@ -24,12 +24,15 @@ const DATA_SOURCES = {
 const MULTIPLIERS = buildMultiplierArray();
 
 
-const getDKHours = (date) => {
-    return parseInt(new Intl.DateTimeFormat("da-DK", {
+const getDKPart = (date, options) => {
+    return new Intl.DateTimeFormat("da-DK", {
         timeZone: CONFIG.TIMEZONE,
-        hour: "2-digit",
-        hour12: false,
-    }).format(date));
+        ...options
+    }).format(date);
+};
+
+const getDKHour = (date) => {
+    return parseInt(getDKPart(date, { hour: "2-digit", hour12: false }));
 };
 
 
@@ -52,17 +55,21 @@ class WeatherService {
 
     static processForecast(wData) {
         const timeseries = wData.properties.timeseries;
-        const currentHour = new Date().getHours();
+        
+        const now = new Date();
+        const currentDKHour = getDKHour(now);
+        const currentDKDay = getDKPart(now, { day: "numeric" });
 
         const days = [];
         let currentDay = [];
 
         timeseries.forEach(item => {
             const time = new Date(item.time);
-            const dkHour = getDKHours(time);
+            const dkHour = getDKHour(time);
+            const dkDay = getDKPart(time, { day: "numeric"});
 
             // filter past hours and night hours
-            if (time.getHours() < currentHour && time.getDate() === new Date().getDate()) return;
+            if (dkDay === currentDKDay && dkHour < currentDKHour) return;
             if (dkHour < 6 || dkHour > 22) return;
 
             const rain = item.data.next_1_hours?.details?.precipitation_amount ??
@@ -77,7 +84,7 @@ class WeatherService {
                 rain
             );
 
-            if (currentDay.length > 0 && time.getDate() !== currentDay[0].time.getDate()) {
+            if (currentDay.length > 0 && dkDay !== getDKPart(currentDay[0].time, { day: "numeric"})) {
                 days.push(currentDay);
                 currentDay = [];
             }
@@ -160,10 +167,10 @@ class UI {
                 <tbody>
                     ${day.map(h => `
                         <tr>
-                            <td>${h.time.toLocaleTimeString("da-DK", { hour: '2-digit', minute: '2-digit' }).slice(0, 2)}</td>
+                            <td>${getDKPart(h.time, { hour: '2-digit', timeZone: CONFIG.TIMEZONE })}</td>
                             <td>${Math.round(h.temp)}° ${this.#getRainIcon(h.rain)}</td>
                             <td>
-                                ${h.wind.toFixed(1)}
+                                <span class="wind-span">${h.wind.toFixed(0)}</span>
                                 <img src="imgs/arrow_lowres.png" style="transform: rotate(${h.toDirection}deg); height:20px; margin-left:10px;">
                             </td>
                             <td style="color: ${this.getScoreColor(h.score)}; font-weight: bold;">${h.score}</td>
@@ -179,9 +186,9 @@ class UI {
         return new Intl.DateTimeFormat("da-DK", { weekday: 'long' }).format(date);
     };
 
-    static setError() {
+    static setYrError() {
         const tableDiv = document.getElementById("tableDiv");
-        tableDiv.innerHTML = `<p>&#9888;</p></p>Error getting data</p>`;
+        tableDiv.innerHTML = `<p>&#9888;</p></p>Kan ikke hente vejrdata fra yr.no :(</p>`;
         tableDiv.className = "transition";
         tableDiv.classList.add("error");
         tableDiv.style.textAlign = "center";
@@ -247,7 +254,7 @@ async function init() {
             document.getElementById("footer").className = "transition";
         }
         else {
-            UI.setError();
+            UI.setYrError();
         }
     } catch (error) {
         console.log(error);
