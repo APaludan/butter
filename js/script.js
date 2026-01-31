@@ -3,6 +3,7 @@ const CONFIG = {
     lon: 9.941,
     stationId: 20567,
     timezone: "Europe/Copenhagen",
+    locale: navigator.language || "da-DK",
     multipliers: [
         // must have multiplier at 0 and 360
         // must be sorted
@@ -24,19 +25,14 @@ const DATA_SOURCES = {
 }
 
 const FORMATTERS = {
-    hour: new Intl.DateTimeFormat("da-DK", { hour: "2-digit", hour12: false, timeZone: CONFIG.timezone }),
-    day: new Intl.DateTimeFormat("da-DK", { day: "numeric", timeZone: CONFIG.timezone }),
-    fullDate: new Intl.DateTimeFormat("da-DK", { weekday: 'long', day: 'numeric', month: 'numeric', timeZone: CONFIG.timezone })
+    hour: new Intl.DateTimeFormat(CONFIG.locale, { hour: "2-digit", hour12: false, timeZone: CONFIG.timezone }),
+    day: new Intl.DateTimeFormat(CONFIG.locale, { day: "numeric", timeZone: CONFIG.timezone }),
+    fullDate: new Intl.DateTimeFormat(CONFIG.locale, { weekday: 'long', day: 'numeric', month: 'numeric', timeZone: CONFIG.timezone })
 };
 
-const getDKHour = (date) => {
-    return parseInt(FORMATTERS.hour.format(date));
-};
+const getLocalHour = (date) => parseInt(FORMATTERS.hour.format(date));
 
-const getDKDay = (date) => {
-    return parseInt(FORMATTERS.day.format(date));
-};
-
+const getLocalDay = (date) => parseInt(FORMATTERS.day.format(date));
 
 const getMultiplier = (direction) => {
     const m = CONFIG.multipliers;
@@ -71,20 +67,20 @@ class WeatherService {
         const timeseries = wData.properties.timeseries;
 
         const now = new Date();
-        const currentDKHour = getDKHour(now);
-        const currentDKDay = getDKDay(now);
+        const currentLocalHour = getLocalHour(now);
+        const currentLocalDay = getLocalDay(now);
 
         const days = [];
         let currentDay = [];
 
         for (const item of timeseries) {
             const time = new Date(item.time);
-            const dkHour = getDKHour(time);
-            const dkDay = getDKDay(time);
+            const localHour = getLocalHour(time);
+            const localDay = getLocalDay(time);
 
             // filter past hours and night hours
-            if (dkDay === currentDKDay && dkHour < currentDKHour) continue;
-            if (dkHour < 6 || dkHour > 22) continue;
+            if (localDay === currentLocalDay && localHour < currentLocalHour) continue;
+            if (localHour < 6 || localHour > 22) continue;
 
             const rain = item.data.next_1_hours?.details?.precipitation_amount ??
                 (item.data.next_6_hours?.details?.precipitation_amount / 6.0) ?? 0;
@@ -98,7 +94,7 @@ class WeatherService {
                 rain
             );
 
-            if (currentDay.length > 0 && dkDay !== getDKDay(currentDay[0].time)) {
+            if (currentDay.length > 0 && localDay !== getLocalDay(currentDay[0].time)) {
                 days.push(currentDay);
                 currentDay = [];
             }
@@ -181,10 +177,10 @@ class UI {
                 <tbody>
                     ${day.map(h => `
                         <tr>
-                            <td>${getDKHour(h.time).toString().padStart(2, '0')}</td>
+                            <td>${getLocalHour(h.time).toString().padStart(2, '0')}</td>
                             <td>${Math.round(h.temp)}° ${this.#getRainIcon(h.rain)}</td>
                             <td>
-                                <span class="wind-span">${h.wind.toFixed(0)}</span>
+                                <span class="wind-span">${Math.round(h.wind)}</span>
                                 <img src="imgs/arrow_lowres.png" style="transform: rotate(${h.toDirection}deg); height:20px; margin-left:10px;">
                             </td>
                             <td style="color: ${this.getScoreColor(h.score)}; font-weight: bold;">${h.score}</td>
