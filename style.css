@@ -114,6 +114,7 @@ h1 {
     animation: slide-up 0.4s ease;
     animation-fill-mode: forwards;
     position: relative;
+    opacity: 0;
 }
 
 @keyframes slide-up {
