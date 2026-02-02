@@ -9,17 +9,17 @@ const CONFIG = {
         // must have multiplier at 0 and 360
         // d: from direction
         // v: value
-        { d: 0,   v: 0.9  },
-        { d: 80,  v: 0.6  },
+        { d: 0, v: 0.9 },
+        { d: 80, v: 0.6 },
         { d: 135, v: 0.35 },
-        { d: 180, v: 0.3  },
-        { d: 240, v: 0.5  },
+        { d: 180, v: 0.3 },
+        { d: 240, v: 0.5 },
         { d: 300, v: 0.75 },
-        { d: 360, v: 0.9  },
+        { d: 360, v: 0.9 },
     ],
 }
 console.assert(
-    CONFIG.multipliers.every((val, i, arr) => i == 0 || val.d >= arr[i-1].d),
+    CONFIG.multipliers.every((val, i, arr) => i == 0 || val.d >= arr[i - 1].d),
     "CONFIG.multipliers must be sorted by direction."
 );
 console.assert(
@@ -56,19 +56,12 @@ const getMultiplier = (direction) => {
 
 
 class WeatherService {
-    static async fetchData() {
-        const results = await Promise.allSettled([
-            fetch(DATA_SOURCES.weather).then(r => r.json()),
-            fetch(DATA_SOURCES.waterTemp).then(r => r.json())
-        ]);
+    static async fetchWeather() {
+        return fetch(DATA_SOURCES.weather).then(res => res.json());
+    }
 
-        const weatherRes = results[0].status === 'fulfilled' ? results[0].value : null;
-        const waterRes = results[1].status === 'fulfilled' ? results[1].value : null;
-
-        return {
-            weather: weatherRes,
-            waterTemp: waterRes?.features?.[0]?.properties?.value ?? null,
-        };
+    static async fetchWaterTemp() {
+        return fetch(DATA_SOURCES.waterTemp).then(res => res.json());
     }
 
     static processForecast(wData) {
@@ -160,13 +153,18 @@ class UI {
     static setWaterTemp(temp) {
         const el = document.getElementById("watertemp");
         el.classList.remove("spinner");
-        if (temp !== null) {
-            el.innerHTML = Math.round(temp) + "°";
-        } else {
-            el.innerHTML = "&#9888;";
-            el.classList.add("error");
-        }
+        el.innerHTML = Math.round(temp) + "°";
         el.classList.add("transition-no-transform");
+    }
+
+    static setWaterTempError(e) {
+        const el = document.getElementById("watertemp");
+        el.classList.remove("spinner");
+        el.innerHTML = "&#9888;";
+        el.classList.add("error");
+        el.classList.add("transition-no-transform");
+        const status = document.getElementById("status-messages");
+        status.innerHTML += `<code>water temperature: ${e}</code>`;
     }
 
     static createDayTable(day, index) {
@@ -200,7 +198,7 @@ class UI {
         return container;
     }
 
-    static setYrError() {
+    static setYrError(e) {
         const tableDiv = document.getElementById("tableDiv");
         tableDiv.innerHTML = `<p>&#9888;</p></p>Kan ikke hente vejrdata fra yr.no :(</p>`;
         tableDiv.className = "transition";
@@ -208,6 +206,8 @@ class UI {
         tableDiv.style.textAlign = "center";
         tableDiv.style.fontSize = "xx-large";
         document.getElementById("footer").className = "transition";
+        const status = document.getElementById("status-messages");
+        status.innerHTML += `<code>weather: ${e}</code>`;
     }
 }
 
@@ -232,33 +232,24 @@ function calcButter(wind, direction) {
 
 
 async function init() {
-    try {
+    UI.setSunTimes();
 
-        const { weather, waterTemp } = await WeatherService.fetchData();
+    WeatherService.fetchWaterTemp()
+        .then(data => UI.setWaterTemp(data.features[0].properties.value))
+        .catch((e) => UI.setWaterTempError(e));
 
-        if (weather) {
-            const forecastDays = WeatherService.processForecast(weather);
-
+    WeatherService.fetchWeather()
+        .then(data => {
+            const forecast = WeatherService.processForecast(data);
             const fragment = document.createDocumentFragment();
-            forecastDays.forEach((day, i) => {
+            forecast.forEach((day, i) => {
                 fragment.appendChild(UI.createDayTable(day, i));
             });
 
             document.getElementById("tableDiv").appendChild(fragment);
             document.getElementById("footer").className = "transition";
-        }
-        else {
-            UI.setYrError();
-        }
-
-        UI.setWaterTemp(waterTemp);
-        UI.setSunTimes();
-
-    } catch (error) {
-        console.log(error);
-        alert(error);
-    }
+        })
+        .catch((e) => UI.setYrError(e))
 }
-
 
 init();
