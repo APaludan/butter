@@ -239,8 +239,8 @@ async function init() {
         .catch((e) => UI.setWaterTempError(e));
 
     WeatherService.fetchWeather()
-        .then(data => {
-            const forecast = WeatherService.processForecast(data);
+        .then(data => WeatherService.processForecast(data))
+        .then(forecast => {
             const fragment = document.createDocumentFragment();
             forecast.forEach((day, i) => {
                 fragment.appendChild(UI.createDayTable(day, i));
