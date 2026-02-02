@@ -5,19 +5,27 @@ const CONFIG = {
     timezone: "Europe/Copenhagen",
     locale: navigator.language || "da-DK",
     multipliers: [
+        // must be sorted by direction ascending
         // must have multiplier at 0 and 360
-        // must be sorted
         // d: from direction
         // v: value
-        { d: 0, v: 0.9 },
-        { d: 80, v: 0.6 },
+        { d: 0,   v: 0.9  },
+        { d: 80,  v: 0.6  },
         { d: 135, v: 0.35 },
-        { d: 180, v: 0.3 },
-        { d: 240, v: 0.5 },
+        { d: 180, v: 0.3  },
+        { d: 240, v: 0.5  },
         { d: 300, v: 0.75 },
-        { d: 360, v: 0.9 },
+        { d: 360, v: 0.9  },
     ],
 }
+console.assert(
+    CONFIG.multipliers.every((val, i, arr) => i == 0 || val.d >= arr[i-1].d),
+    "CONFIG.multipliers must be sorted by direction."
+);
+console.assert(
+    CONFIG.multipliers[0].d === 0 && CONFIG.multipliers[CONFIG.multipliers.length - 1].d === 360,
+    "CONFIG.multipliers must have multiplier at d: 0 and d: 360"
+);
 
 const DATA_SOURCES = {
     weather: `https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${CONFIG.lat}&lon=${CONFIG.lon}`,
