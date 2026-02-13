@@ -245,8 +245,8 @@ async function init() {
             forecast.forEach((day, i) => {
                 fragment.appendChild(UI.createDayTable(day, i));
             });
-
             document.getElementById("tableDiv").appendChild(fragment);
+
             document.getElementById("footer").className = "transition";
         })
         .catch((e) => UI.setYrError(e))
