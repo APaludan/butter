@@ -13,8 +13,10 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            width: 100vw;
+        }
+        .container {
+            width: 100%;
+            max-width: 960px;
             overflow: hidden;
         }
     </style>
@@ -22,18 +24,20 @@
 
 <body>
 
-    <canvas id="canvas" width="960" height="100"></canvas>
-
-    <div>
+    <div class="container">
+        <canvas id="canvas" width="960" height="100"></canvas>
+    
         <div>
-            <label>Primary</label>
-            <input type="range" id="intensity-slider" min="0" max="10" step="1" value="3">
-            <p id="intensity-value">3</p>
-        </div>
-        <div>
-            <label>Secondary</label>
-            <input type="range" id="detail-slider" min="0" max="2" step="0.1" value="0.5">
-            <p id="detail-value">0.5</p>
+            <div>
+                <label>Primary</label>
+                <input type="range" id="intensity-slider" min="0" max="10" step="1" value="3">
+                <p id="intensity-value">3</p>
+            </div>
+            <div>
+                <label>Secondary</label>
+                <input type="range" id="detail-slider" min="0" max="2" step="0.1" value="0.5">
+                <p id="detail-value">0.5</p>
+            </div>
         </div>
     </div>
 
