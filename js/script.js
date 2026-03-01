@@ -17,25 +17,38 @@ const CONFIG = {
         { d: 300, v: 0.75 },
         { d: 360, v: 0.9 },
     ],
-}
+};
 console.assert(
     CONFIG.multipliers.every((val, i, arr) => i == 0 || val.d >= arr[i - 1].d),
-    "CONFIG.multipliers must be sorted by direction."
+    "CONFIG.multipliers must be sorted by direction.",
 );
 console.assert(
-    CONFIG.multipliers[0].d === 0 && CONFIG.multipliers[CONFIG.multipliers.length - 1].d === 360,
-    "CONFIG.multipliers must have multiplier at d: 0 and d: 360"
+    CONFIG.multipliers[0].d === 0 &&
+        CONFIG.multipliers[CONFIG.multipliers.length - 1].d === 360,
+    "CONFIG.multipliers must have multiplier at d: 0 and d: 360",
 );
 
 const DATA_SOURCES = {
-    weather: `https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${CONFIG.lat}&lon=${CONFIG.lon}`,
-    waterTemp: `https://opendataapi.dmi.dk/v2/oceanObs/collections/observation/items?limit=1&parameterId=tw&stationId=${CONFIG.stationId}`
-}
+    weather: `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${CONFIG.lat}&lon=${CONFIG.lon}`,
+    waterTemp: `https://opendataapi.dmi.dk/v2/oceanObs/collections/observation/items?limit=1&parameterId=tw&stationId=${CONFIG.stationId}`,
+};
 
 const FORMATTERS = {
-    hour: new Intl.DateTimeFormat(CONFIG.locale, { hour: "2-digit", hour12: false, timeZone: CONFIG.timezone }),
-    day: new Intl.DateTimeFormat(CONFIG.locale, { day: "numeric", timeZone: CONFIG.timezone }),
-    fullDate: new Intl.DateTimeFormat(CONFIG.locale, { weekday: 'long', day: 'numeric', month: 'numeric', timeZone: CONFIG.timezone })
+    hour: new Intl.DateTimeFormat(CONFIG.locale, {
+        hour: "2-digit",
+        hour12: false,
+        timeZone: CONFIG.timezone,
+    }),
+    day: new Intl.DateTimeFormat(CONFIG.locale, {
+        day: "numeric",
+        timeZone: CONFIG.timezone,
+    }),
+    fullDate: new Intl.DateTimeFormat(CONFIG.locale, {
+        weekday: "long",
+        day: "numeric",
+        month: "numeric",
+        timeZone: CONFIG.timezone,
+    }),
 };
 
 const getLocalHour = (date) => parseInt(FORMATTERS.hour.format(date));
@@ -53,15 +66,13 @@ const getMultiplier = (direction) => {
     return m[0].v;
 };
 
-
-
 class WeatherService {
     static async fetchWeather() {
-        return fetch(DATA_SOURCES.weather).then(res => res.json());
+        return fetch(DATA_SOURCES.weather).then((res) => res.json());
     }
 
     static async fetchWaterTemp() {
-        return fetch(DATA_SOURCES.waterTemp).then(res => res.json());
+        return fetch(DATA_SOURCES.waterTemp).then((res) => res.json());
     }
 
     static processForecast(wData) {
@@ -80,11 +91,14 @@ class WeatherService {
             const localDay = getLocalDay(time);
 
             // filter past hours and night hours
-            if (localDay === currentLocalDay && localHour < currentLocalHour) continue;
+            if (localDay === currentLocalDay && localHour < currentLocalHour)
+                continue;
             if (localHour < 6 || localHour > 22) continue;
 
-            const rain = item.data.next_1_hours?.details?.precipitation_amount ??
-                (item.data.next_6_hours?.details?.precipitation_amount / 6.0) ?? 0;
+            const rain =
+                item.data.next_1_hours?.details?.precipitation_amount ??
+                item.data.next_6_hours?.details?.precipitation_amount / 6.0 ??
+                0;
 
             const details = item.data.instant.details;
             const hour = new ForecastHour(
@@ -92,10 +106,13 @@ class WeatherService {
                 details.air_temperature,
                 details.wind_speed,
                 details.wind_from_direction,
-                rain
+                rain,
             );
 
-            if (currentDay.length > 0 && localDay !== getLocalDay(currentDay[0].time)) {
+            if (
+                currentDay.length > 0 &&
+                localDay !== getLocalDay(currentDay[0].time)
+            ) {
                 days.push(currentDay);
                 currentDay = [];
             }
@@ -115,16 +132,20 @@ class UI {
         const sunsetStr = `${times.sunset.getHours()}:${times.sunset.getMinutes().toString().padStart(2, 0)}`;
 
         document.getElementById("sunrise").textContent = sunriseStr;
-        document.getElementById("sunrise").classList.add("transition-no-transform");
+        document
+            .getElementById("sunrise")
+            .classList.add("transition-no-transform");
 
         document.getElementById("sunset").textContent = sunsetStr;
-        document.getElementById("sunset").classList.add("transition-no-transform");
+        document
+            .getElementById("sunset")
+            .classList.add("transition-no-transform");
     }
 
     static #getRainIcon(rain) {
-        if (rain <= 0.1) return '';
-        const level = rain < 0.5 ? 'low' : rain < 1.0 ? 'mid' : 'high';
-        return `<img src="imgs/rain_${level}.png" style="height:20px; margin-left:10px; margin-bottom:-5px;">`;
+        if (rain <= 0.1) return "";
+        const level = rain < 0.5 ? "low" : rain < 1.0 ? "mid" : "high";
+        return `<img src="imgs/rain_${level}.webp" style="height:20px; margin-left:10px; margin-bottom:-5px;">`;
     }
 
     static getScoreColor(score) {
@@ -172,7 +193,7 @@ class UI {
         container.className = "transition";
         container.style.animationDelay = `${index * 0.2}s`;
 
-        const title = FORMATTERS.fullDate.format(day[0].time).replace('.', '/');
+        const title = FORMATTERS.fullDate.format(day[0].time).replace(".", "/");
 
         container.innerHTML = `
             <h4 style="margin-bottom: 5px; text-transform: capitalize;">${title}</h4>
@@ -181,17 +202,21 @@ class UI {
                     <tr><th>Time</th><th>Temp &degC</th><th>Vind m/s</th><th>Score</th></tr>
                 </thead>
                 <tbody>
-                    ${day.map(h => `
+                    ${day
+                        .map(
+                            (h) => `
                         <tr>
-                            <td>${getLocalHour(h.time).toString().padStart(2, '0')}</td>
+                            <td>${getLocalHour(h.time).toString().padStart(2, "0")}</td>
                             <td>${Math.round(h.temp)}° ${this.#getRainIcon(h.rain)}</td>
                             <td>
                                 <span class="wind-span">${Math.round(h.wind)}</span>
-                                <img src="imgs/arrow_lowres.png" style="transform: rotate(${h.toDirection}deg); height:20px; margin-left:10px;">
+                                <img src="imgs/arrow_lowres.webp" style="transform: rotate(${h.toDirection}deg); height:20px; margin-left:10px;">
                             </td>
                             <td style="color: ${this.getScoreColor(h.score)}; font-weight: bold;">${h.score}</td>
                         </tr>
-                    `).join('')}
+                    `,
+                        )
+                        .join("")}
                 </tbody>
             </table>
         `;
@@ -211,13 +236,12 @@ class UI {
     }
 }
 
-
 class ForecastHour {
     constructor(time, temp, wind, direction, rain) {
         this.time = time;
         this.temp = temp;
         this.wind = wind;
-        this.rain = rain
+        this.rain = rain;
         this.fromDirection = direction;
         this.toDirection = (direction + 180) % 360;
         this.score = calcButter(wind, direction);
@@ -229,18 +253,16 @@ function calcButter(wind, direction) {
     return Math.round(score);
 }
 
-
-
 async function init() {
     UI.setSunTimes();
 
     WeatherService.fetchWaterTemp()
-        .then(data => UI.setWaterTemp(data.features[0].properties.value))
+        .then((data) => UI.setWaterTemp(data.features[0].properties.value))
         .catch((e) => UI.setWaterTempError(e));
 
     WeatherService.fetchWeather()
-        .then(data => WeatherService.processForecast(data))
-        .then(forecast => {
+        .then((data) => WeatherService.processForecast(data))
+        .then((forecast) => {
             const fragment = document.createDocumentFragment();
             forecast.forEach((day, i) => {
                 fragment.appendChild(UI.createDayTable(day, i));
@@ -249,7 +271,7 @@ async function init() {
 
             document.getElementById("footer").className = "transition";
         })
-        .catch((e) => UI.setYrError(e))
+        .catch((e) => UI.setYrError(e));
 }
 
 init();
