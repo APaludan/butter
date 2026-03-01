@@ -1,64 +1,104 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="da">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Er det butter?</title>
+        <link rel="shortcut icon" type="image/x-icon" href="imgs/favicon.ico" />
+        <link rel="stylesheet" href="style.css" />
+        <link rel="manifest" href="manifest.json" />
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Er det butter?</title>
-    <link rel="shortcut icon" type="image/x-icon" href="imgs/favicon.ico">
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-</head>
+    <body>
+        <div class="container">
+            <div
+                style="
+                    display: flex;
+                    justify-content: space-between;
+                    justify-items: center;
+                "
+            >
+                <div
+                    style="
+                        display: flex;
+                        justify-content: space-evenly;
+                        justify-items: center;
+                    "
+                >
+                    <h1>🧈🧈</h1>
+                    <h1>🧈🧈</h1>
+                </div>
+                <div>
+                    <h1>Er det butter?</h1>
+                </div>
+                <div
+                    style="
+                        display: flex;
+                        justify-content: space-evenly;
+                        justify-items: center;
+                    "
+                >
+                    <h1>🧈🧈</h1>
+                    <h1>🧈🧈</h1>
+                </div>
+            </div>
+            <h2 class="center-text">Aalborg Cable Park</h2>
 
-<body>
-    <div class="container">
-        <div style="display: flex; justify-content: space-between; justify-items: center;">
-            <div style="display: flex; justify-content: space-evenly; justify-items: center;">
-                <h1>🧈🧈</h1>
-                <h1>🧈🧈</h1>
+            <div class="info">
+                <div
+                    style="
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                    "
+                >
+                    <img src="imgs/sunrise.svg" class="sun-img" />
+                    <p id="sunrise">&#8203;</p>
+                </div>
+                <div
+                    style="
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                    "
+                >
+                    <img src="imgs/sunset.svg" class="sun-img" />
+                    <p id="sunset">&#8203;</p>
+                </div>
+                <div
+                    style="
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                    "
+                >
+                    <img src="imgs/wave.svg" class="sun-img" />
+                    <p id="watertemp" class="spinner">&#8203;</p>
+                </div>
             </div>
-            <div>
-                <h1>Er det butter?</h1>
+            <div id="tableDiv"></div>
+            <div
+                style="margin-top: 20px; margin-bottom: 20px; opacity: 0"
+                id="footer"
+            >
+                <p class="cc">
+                    Data from The Norwegian Meteorological Institute.
+                </p>
+                <br />
+                <p>
+                    This data is licensed under a
+                    <a
+                        rel="license"
+                        href="http://creativecommons.org/licenses/by/4.0/"
+                        >Creative Commons Attribution 4.0 International
+                        license.</a
+                    >
+                </p>
             </div>
-            <div style="display: flex; justify-content: space-evenly; justify-items: center;">
-                <h1>🧈🧈</h1>
-                <h1>🧈🧈</h1>
-            </div>
+            <div id="status-messages"></div>
         </div>
-        <h2 class="center-text">Aalborg Cable Park</h2>
-
-        <div class="info">
-            <div style="display: flex; flex-direction: column; align-items: center;">
-                <img src="imgs/sunrise.svg" class="sun-img">
-                <p id="sunrise">&#8203;</p>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: center;">
-                <img src="imgs/sunset.svg" class="sun-img">
-                <p id="sunset">&#8203;</p>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: center;">
-                <img src="imgs/wave.svg" class="sun-img">
-                <p id="watertemp" class="spinner">&#8203;</p>
-            </div>
-        </div>
-        <div id="tableDiv"></div>
-        <div style="margin-top: 20px; margin-bottom: 20px; opacity: 0;" id="footer">
-            <p class="cc">Data from The Norwegian Meteorological Institute.</p>
-            <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
-                <img alt="Creative Commons-lisens" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
-            </a>
-            <br />
-            <p>
-                This data is licensed under a
-                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons
-                    Attribution 4.0 International license.</a>
-            </p>
-        </div>
-        <div id="status-messages"></div>
-    </div>
-    <script src="js/suncalc/suncalc.js"></script>
-    <script src="js/script.js"></script>
-</body>
-
+        <script src="js/suncalc/suncalc.js"></script>
+        <script src="js/script.js"></script>
+    </body>
 </html>
